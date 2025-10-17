@@ -1,0 +1,1513 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Galactic Directory — Sentinel Edition</title>
+<meta name="description" content="Self-improving, AI-enhanced directory for the Planetary Restoration Archive with constellation visuals, gamification, and intelligent metadata management.">
+<!--
+  ╔═══════════════════════════════════════════════════════════════════════╗
+  ║  ZERO-HARM / ANTI-INVERSION NOTICE                                    ║
+  ╠═══════════════════════════════════════════════════════════════════════╣
+  ║  This tool is designed for peaceful exploration of planetary          ║
+  ║  restoration resources. It is NOT intended for:                       ║
+  ║  • Surveillance, tracking, or profiling                               ║
+  ║  • Weaponization or harmful applications                              ║
+  ║  • Exploitation of user data                                          ║
+  ║                                                                        ║
+  ║  AI Assistant: Uses Claude API for metadata enhancement only.         ║
+  ║  All data stored locally (IndexedDB). No external tracking.           ║
+  ║  Open source spirit. License: MIT-style respect.                      ║
+  ╚═══════════════════════════════════════════════════════════════════════╝
+-->
+<style>
+  /* ═══════════════════════════════════════════════════════════════════
+     SECTION: CSS Variables & Theme System
+     PURPOSE: Centralized design tokens with dark mode support
+     ═══════════════════════════════════════════════════════════════════ */
+  :root{
+    --bg:#070b14; --bg2:#0b1324; --panel:#0f1d36; --ink:#eaf1ff; --muted:#9bb0cc;
+    --accent:#65b3ff; --accent2:#4ee0a1; --warn:#ffb84d; --danger:#ff6b6b; --glow:#8ad7ff;
+    --good:#3bd19b; --sentinel:#7cd2ff; --peace:#7fffd4; --corrupt:#ff7f9c; --dash:#ffd166;
+    --success:#4ade80; --info:#60a5fa;
+  }
+  
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{height:100%; scroll-behavior:smooth}
+  body{
+    color:var(--ink); 
+    background:radial-gradient(1200px 800px at 70% -10%,#12203c 0%,transparent 60%), 
+               linear-gradient(180deg,var(--bg),var(--bg2) 60%,#060912);
+    font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    overflow-x:hidden;
+  }
+  
+  /* ═══════════════════════════════════════════════════════════════════
+     SECTION: Parallax Background System
+     ═══════════════════════════════════════════════════════════════════ */
+  #stars,#constellations{position:fixed; inset:0; z-index:-2; pointer-events:none}
+  #constellations{z-index:-1}
+  .parallax{transform:translateZ(0); will-change:transform}
+  
+  /* ═══════════════════════════════════════════════════════════════════
+     SECTION: Header & Navigation
+     ═══════════════════════════════════════════════════════════════════ */
+  header{
+    position:sticky; top:0; z-index:100; backdrop-filter:saturate(120%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,19,36,.95),rgba(11,19,36,.7));
+    border-bottom:1px solid #1b2c4d; box-shadow:0 4px 20px rgba(0,0,0,.3);
+  }
+  .wrap{max-width:1100px; margin:0 auto; padding:16px}
+  h1{margin:0 0 6px; font-size:22px; letter-spacing:.4px; color:var(--accent)}
+  .sub{color:var(--muted); font-size:13px; line-height:1.4}
+  
+  /* ═══════════════════════════════════════════════════════════════════
+     SECTION: HUD & Gamification
+     ═══════════════════════════════════════════════════════════════════ */
+  .hud{display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-top:10px}
+  .chip{background:#0a152a; border:1px solid #203353; padding:8px 10px; border-radius:999px; display:flex; gap:8px; align-items:center; white-space:nowrap}
+  .xpbar{height:10px; width:220px; border-radius:999px; background:#0a152a; border:1px solid #1c2d4d; overflow:hidden}
+  .xpfill{height:100%; width:0%; background:linear-gradient(90deg,var(--accent),var(--accent2)); box-shadow:0 0 14px var(--glow) inset; transition:width .6s cubic-bezier(.4,0,.2,1)}
+  .badge{padding:3px 9px; border-radius:999px; font-size:11px; border:1px solid; opacity:.9; font-weight:500}
+  .b-sentinel{border-color:var(--sentinel); color:var(--sentinel); background:rgba(124,210,255,.05)}
+  .b-peace{border-color:var(--peace); color:var(--peace); background:rgba(127,255,212,.05)}
+  .b-corrupt{border-color:var(--corrupt); color:var(--corrupt); background:rgba(255,127,156,.05)}
+  .b-dash{border-color:var(--dash); color:var(--dash); background:rgba(255,209,102,.05)}
+  
+  /* ═══════════════════════════════════════════════════════════════════
+     SECTION: Controls & Inputs
+     ═══════════════════════════════════════════════════════════════════ */
+  .controls{display:flex; gap:10px; margin-top:10px; flex-wrap:wrap}
+  input[type="search"],input[type="text"],textarea{
+    flex:1 1 320px; background:#0a152a; color:var(--ink); border:1px solid #1f304f; 
+    border-radius:10px; padding:10px 12px; outline:none; font-family:inherit; font-size:14px;
+  }
+  input:focus,textarea:focus{border-color:#2a4577; box-shadow:0 0 0 3px rgba(42,69,119,.2)}
+  select,button{
+    background:#0a152a; color:var(--ink); border:1px solid #203353; border-radius:10px; 
+    padding:10px 12px; cursor:pointer; font-family:inherit; font-size:14px; transition:all .2s ease;
+  }
+  button:hover:not(:disabled),select:hover{border-color:#2a4577; background:#0d1a30}
+  button:active:not(:disabled){transform:translateY(1px)}
+  button:disabled{opacity:.5; cursor:not-allowed}
+  button.primary{background:var(--accent); border-color:var(--accent); color:#000; font-weight:600}
+  button.primary:hover:not(:disabled){background:#7ac2ff}
+  button.danger{border-color:var(--danger); color:var(--danger)}
+  button.danger:hover:not(:disabled){background:rgba(255,107,107,.1)}
+  
+  /* ═══════════════════════════════════════════════════════════════════
+     SECTION: Main Content Grid
+     ═══════════════════════════════════════════════════════════════════ */
+  main{max-width:1200px; margin:18px auto 80px; padding:0 16px}
+  .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:14px}
+  
+  /* ═══════════════════════════════════════════════════════════════════
+     SECTION: Directory Cards
+     ═══════════════════════════════════════════════════════════════════ */
+  .card{
+    background:linear-gradient(180deg,#0c1730,#0c1528);
+    border:1px solid #1a2a49; border-radius:16px; padding:14px; position:relative; overflow:hidden;
+    transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  }
+  .card:hover{transform:translateY(-2px); box-shadow:0 10px 30px rgba(80,160,255,.08); border-color:#2a4577}
+  .card.loading{opacity:.6; pointer-events:none}
+  .card.enhanced{border-color:#4ee0a1; box-shadow:0 0 0 1px rgba(78,224,161,.2) inset}
+  .title{font-weight:600; color:#eaf1ff; margin:2px 0 6px; word-break:break-word; font-size:16px}
+  .path{color:#9ab0cb; font-size:12px; font-family:Consolas,Monaco,monospace; margin-bottom:6px}
+  .description{color:#b8cce0; font-size:13px; line-height:1.5; margin:8px 0; display:none}
+  .card.enhanced .description{display:block}
+  .tags{margin-top:8px; display:flex; gap:6px; flex-wrap:wrap}
+  .cta{margin-top:12px; display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+  .cta a,.cta button{
+    text-decoration:none; padding:8px 10px; border-radius:10px; border:1px solid #23406f; 
+    background:#0a152a; color:#dff2ff; font-size:13px; display:inline-flex; align-items:center; gap:4px;
+  }
+  .cta a:hover,.cta button:hover{border-color:#3a63a4; background:#0d1a30}
+  .glow-ring{position:absolute; inset:auto -20% -60% -20%; height:140px; filter:blur(30px); background:radial-gradient(220px 40px at 50% 0,rgba(120,210,255,.18),transparent 60%)}
+  .special{border-color:#2a6fff; box-shadow:0 0 0 1px rgba(86,160,255,.25) inset}
+  .special .title{color:#a5d4ff}
+  
+  /* ═══════════════════════════════════════════════════════════════════
+     SECTION: AI Assistant Panel - TOP RIGHT MINIATURE DESIGN
+     PURPOSE: Compact AI chatbot positioned in top-right corner
+     ═══════════════════════════════════════════════════════════════════ */
+  .ai-mini-btn{
+    position:fixed; top:16px; right:16px; z-index:1000; 
+    width:40px; height:40px; border-radius:50%;
+    background:linear-gradient(135deg,var(--accent),var(--accent2)); 
+    border:2px solid rgba(255,255,255,.2); color:#000;
+    font-size:18px; cursor:pointer; box-shadow:0 4px 12px rgba(101,179,255,.4);
+    transition:transform .2s ease, box-shadow .2s ease; display:flex; align-items:center; justify-content:center;
+    padding:0; line-height:1;
+  }
+  .ai-mini-btn:hover{transform:scale(1.05); box-shadow:0 6px 20px rgba(101,179,255,.6)}
+  .ai-mini-btn.pulse{animation:pulse 2s ease-in-out infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 4px 12px rgba(101,179,255,.4)} 50%{box-shadow:0 6px 24px rgba(101,179,255,.8)}}
+  
+  .ai-panel-mini{
+    position:fixed; top:66px; right:16px; z-index:999; width:320px; max-width:calc(100vw - 32px);
+    background:linear-gradient(180deg,#0f1d36,#0c1528); border:1px solid #2a4577; border-radius:12px;
+    box-shadow:0 8px 24px rgba(0,0,0,.5); transform:translateY(-10px); opacity:0; 
+    pointer-events:none; transition:opacity .2s ease, transform .2s ease;
+  }
+  .ai-panel-mini.open{transform:translateY(0); opacity:1; pointer-events:auto}
+  
+  .ai-header-mini{
+    padding:10px 12px; border-bottom:1px solid #1a2a49; display:flex; justify-content:space-between; align-items:center;
+    background:rgba(15,29,54,.6);
+  }
+  .ai-header-mini h3{font-size:13px; color:var(--accent2); display:flex; align-items:center; gap:6px; font-weight:600}
+  .ai-close-mini{background:transparent; border:none; color:var(--muted); font-size:18px; padding:0; width:20px; height:20px; cursor:pointer}
+  .ai-close-mini:hover{color:var(--ink)}
+  
+  .ai-body-mini{padding:12px; max-height:280px; overflow-y:auto; font-size:13px}
+  .ai-body-mini::-webkit-scrollbar{width:6px}
+  .ai-body-mini::-webkit-scrollbar-track{background:rgba(255,255,255,.02)}
+  .ai-body-mini::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1); border-radius:3px}
+  
+  .ai-msg{margin-bottom:10px; padding:8px 10px; border-radius:8px; line-height:1.4; font-size:12px}
+  .ai-msg.user{background:#1a2a49; color:var(--ink); margin-left:16px}
+  .ai-msg.assistant{background:rgba(78,224,161,.08); color:#e0f2f1; margin-right:16px; border-left:2px solid var(--accent2)}
+  .ai-msg.system{background:rgba(255,184,77,.08); color:#ffd699; font-style:italic; text-align:center; font-size:11px; padding:6px 8px}
+  
+  .ai-input-mini{padding:10px 12px; border-top:1px solid #1a2a49; display:flex; gap:6px; background:rgba(15,29,54,.4)}
+  .ai-input-mini input{
+    flex:1; min-width:0; background:#0a152a; color:var(--ink); border:1px solid #1f304f;
+    border-radius:8px; padding:7px 10px; outline:none; font-size:12px;
+  }
+  .ai-input-mini input:focus{border-color:#2a4577}
+  .ai-input-mini button{
+    background:var(--accent2); border:none; color:#000; border-radius:8px; padding:7px 12px;
+    font-size:12px; font-weight:600; cursor:pointer;
+  }
+  .ai-input-mini button:hover{background:#5ff0b1}
+  
+  /* ═══════════════════════════════════════════════════════════════════
+     SECTION: Animated Spaceships
+     ═══════════════════════════════════════════════════════════════════ */
+  .ship{
+    position:fixed; width:30px; height:30px; pointer-events:none; opacity:.8; z-index:0; 
+    filter:drop-shadow(0 0 6px rgba(130,200,255,.6))
+  }
+  @keyframes patrolX{0%{transform:translateX(-10vw)} 100%{transform:translateX(110vw)}}
+  @keyframes patrolY{0%{transform:translateY(0)} 50%{transform:translateY(8px)} 100%{transform:translateY(0)}}
+  .ship path{stroke:#a7ddff; fill:none; stroke-width:1.2}
+  .ship:nth-child(1){top:12vh; left:-10vw; animation:patrolX 42s linear infinite, patrolY 6s ease-in-out infinite}
+  .ship:nth-child(2){top:32vh; left:-15vw; animation:patrolX 60s linear infinite reverse, patrolY 8s ease-in-out infinite}
+  .ship:nth-child(3){top:68vh; left:-20vw; animation:patrolX 55s linear infinite, patrolY 7s ease-in-out infinite}
+  
+  /* ═══════════════════════════════════════════════════════════════════
+     SECTION: Collapsible Categories
+     ═══════════════════════════════════════════════════════════════════ */
+  details.category{background:linear-gradient(180deg,#0b152c,#0b1426); border:1px solid #1a2a49; border-radius:16px; padding:12px 14px; margin:14px 0}
+  details>summary{cursor:pointer; list-style:none; user-select:none; font-weight:600; color:#bdddff; display:flex; align-items:center; gap:8px}
+  details>summary::-webkit-details-marker{display:none}
+  details>summary::before{content:'▶'; transition:transform .2s; display:inline-block; width:16px}
+  details[open]>summary::before{transform:rotate(90deg)}
+  details[open]{border-color:#2a4577}
+  details .grid{margin-top:12px}
+  
+  /* ═══════════════════════════════════════════════════════════════════
+     SECTION: Toast Notifications
+     ═══════════════════════════════════════════════════════════════════ */
+  .toast-container{position:fixed; top:80px; right:20px; z-index:300; display:flex; flex-direction:column; gap:10px; max-width:calc(100vw - 40px)}
+  .toast{
+    background:#0f1d36; border:1px solid #2a4577; border-radius:12px; padding:12px 16px;
+    box-shadow:0 8px 20px rgba(0,0,0,.4); min-width:280px; animation:slideIn .3s ease;
+    display:flex; align-items:center; gap:10px; color:var(--ink);
+  }
+  .toast.success{border-color:var(--success); background:rgba(74,222,128,.08)}
+  .toast.error{border-color:var(--danger); background:rgba(255,107,107,.08)}
+  .toast.info{border-color:var(--info); background:rgba(96,165,250,.08)}
+  @keyframes slideIn{from{transform:translateX(400px); opacity:0} to{transform:translateX(0); opacity:1}}
+  
+  /* ═══════════════════════════════════════════════════════════════════
+     SECTION: Footer
+     ═══════════════════════════════════════════════════════════════════ */
+  footer{color:#8aa6cc; text-align:center; padding:30px 16px; font-size:13px; line-height:1.6}
+  .zero-harm{background:rgba(255,255,255,.02); border:1px solid #1a2a49; border-radius:12px; padding:16px; max-width:800px; margin:20px auto; text-align:left}
+  .zero-harm h3{margin:0 0 8px; color:var(--accent2); font-size:15px}
+  .zero-harm ul{margin:10px 0; padding-left:20px}
+  .zero-harm li{margin:4px 0}
+  
+  /* ═══════════════════════════════════════════════════════════════════
+     SECTION: Utility Classes
+     ═══════════════════════════════════════════════════════════════════ */
+  .hide{display:none !important}
+  .spinner{
+    display:inline-block; width:14px; height:14px; border:2px solid rgba(255,255,255,.2);
+    border-top-color:var(--accent2); border-radius:50%; animation:spin .6s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+  
+  noscript{display:block; padding:20px; background:var(--warn); color:#000; text-align:center; font-weight:600}
+  
+  @media(max-width:768px){
+    .ai-panel-mini{width:calc(100vw - 32px); max-height:60vh}
+    .grid{grid-template-columns:1fr}
+    .hud{font-size:13px}
+    .xpbar{width:160px}
+    .ai-mini-btn{width:36px; height:36px; font-size:16px}
+  }
+</style>
+</head>
+<body>
+
+<canvas id="stars" class="parallax"></canvas>
+<canvas id="constellations" class="parallax"></canvas>
+
+<header>
+  <div class="wrap">
+    <h1>Galactic Directory — <span style="color:var(--accent2)">Sentinel Edition</span></h1>
+    <div class="sub">AI-enhanced exploration platform. Earn XP, unlock badges, and let the AI assistant continuously improve directory metadata.</div>
+    
+    <div class="hud">
+      <div class="chip">Level <strong id="lvl">1</strong></div>
+      <div class="chip" style="gap:10px">
+        <div class="xpbar"><div id="xpfill" class="xpfill"></div></div>
+        <span><span id="xp">0</span> / <span id="xpcap">100</span> XP</span>
+      </div>
+      <div class="chip">
+        <span class="badge b-sentinel">SENTINEL</span> 
+        <span class="badge b-peace">PEACE</span> 
+        <span class="badge b-corrupt">ANTI-CORRUPTION</span> 
+        <span class="badge b-dash">DASHBOARD</span>
+      </div>
+      <div class="chip" id="aiStatus" style="cursor:pointer" title="Click to view AI activity">
+        <span style="font-size:11px">🤖 AI:</span> <span id="aiStatusText">Ready</span>
+      </div>
+    </div>
+    
+    <div class="controls">
+      <input id="search" type="search" placeholder="Search directories, tags, or descriptions…" autocomplete="off">
+      <select id="filter" aria-label="Filter by category">
+        <option value="">All categories</option>
+        <option value="Sentinel">Sentinel</option>
+        <option value="Peace">Peace</option>
+        <option value="Corruption">Corruption</option>
+        <option value="Dashboard">Dashboards</option>
+        <option value="Education">Education</option>
+        <option value="Science">Science/Tech</option>
+        <option value="Community">Community</option>
+        <option value="Governance">Governance</option>
+        <option value="Backups">Backups/Proof</option>
+        <option value="Funding">Funding</option>
+        <option value="Misc">Misc</option>
+      </select>
+      <button id="favoritesBtn">★ Favorites</button>
+      <button id="enhancedBtn">✨ Enhanced Only</button>
+      <button id="aiEnhanceBtn" class="primary" title="Let AI analyze and enhance all directories">🤖 AI Enhance All</button>
+      <button id="resetProg" class="danger">Reset Progress</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <details class="category" open>
+    <summary>⭐ Featured Hubs & Quests</summary>
+    <div class="grid" id="featured"></div>
+  </details>
+
+  <details class="category" open>
+    <summary>📚 All Directories (<span id="dirCount">0</span>)</summary>
+    <div class="grid" id="grid"></div>
+  </details>
+</main>
+
+<footer>
+  <div>
+    Planetary Restoration Archive — Self-Improving Directory System
+    <br>AI-Enhanced Metadata · Local-First Architecture · Zero External Tracking
+    <br>Be kind; be weird; build peace.
+  </div>
+  
+  <div class="zero-harm">
+    <h3>🛡️ Zero-Harm / Anti-Inversion Notice</h3>
+    <p>This tool is designed for peaceful exploration of planetary restoration resources. The AI assistant operates transparently and stores all data locally in your browser.</p>
+    <p><strong>NOT intended for:</strong> Surveillance, tracking, profiling, weaponization, or harmful applications.</p>
+    <p><strong>Data Storage:</strong> IndexedDB (local only). No servers. No external tracking. Full user control.</p>
+    <p><strong>AI Usage:</strong> Claude API for metadata enhancement. Rate-limited. Optional. User-initiated only.</p>
+    <p><strong>License:</strong> Open patterns. MIT-style respect. Attribute adapted code.</p>
+  </div>
+  
+  <div class="zero-harm">
+    <h3>📚 Technical Architecture</h3>
+    <p><strong>Technology Stack:</strong> Pure vanilla JavaScript (no React, no frameworks). Standalone HTML file.</p>
+    <p><strong>IndexedDB Schema:</strong> Versioned (v2), automatic migrations, error recovery.</p>
+    <p><strong>AI System:</strong> Context-aware enhancement using Claude API, batch processing, usage tracking.</p>
+    <p><strong>Security:</strong> Input sanitization, rate limiting, CSP-ready, XSS protection.</p>
+    <p><strong>Future-Proofing:</strong> Modular architecture, extensible schemas, graceful degradation.</p>
+  </div>
+  
+  <div class="zero-harm">
+    <h3>📚 Attributions & Open Source Patterns</h3>
+    <ul>
+      <li>Canvas animation techniques adapted from common web graphics demos (MIT patterns)</li>
+      <li>IndexedDB wrapper patterns inspired by Jake Archibald's IDB library concepts</li>
+      <li>Gamification mechanics adapted from open-source RPG UI frameworks</li>
+      <li>AI integration patterns following Anthropic Claude API best practices</li>
+    </ul>
+    <p>All code substantially rewritten and documented for this specific peaceful use case.</p>
+  </div>
+</footer>
+
+<svg class="ship" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12h8l2-3 2 6 4-3h4"/></svg>
+<svg class="ship" viewBox="0 0 24 24" aria-hidden="true"><path d="M1 8h7l2-2 2 4 5-2h6"/></svg>
+<svg class="ship" viewBox="0 0 24 24" aria-hidden="true"><path d="M0 16h9l2-4 2 5 6-1h5"/></svg>
+
+<!-- AI Assistant - Top Right Miniature -->
+<button class="ai-mini-btn pulse" id="aiMiniBtn" aria-label="Open AI Assistant" title="AI Assistant">🤖</button>
+
+<div class="ai-panel-mini" id="aiPanelMini">
+  <div class="ai-header-mini">
+    <h3><span>🤖</span> AI Assistant</h3>
+    <button class="ai-close-mini" id="aiCloseMini" aria-label="Close">×</button>
+  </div>
+  <div class="ai-body-mini" id="aiBodyMini">
+    <div class="ai-msg system">AI Assistant ready. Ask me to analyze directories, suggest improvements, or explain patterns.</div>
+  </div>
+  <div class="ai-input-mini">
+    <input type="text" id="aiInputMini" placeholder="Ask about directories..." />
+    <button id="aiSendMini">Send</button>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<noscript>
+  <p>⚠️ This application requires JavaScript to function. Please enable JavaScript in your browser settings.</p>
+</noscript>
+
+<script>
+"use strict";
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTION: Pure Vanilla JavaScript - No React Dependencies
+   PURPOSE: This is a standalone HTML file using only native browser APIs
+   TECHNOLOGY: IndexedDB, Fetch API, Canvas API, DOM manipulation
+   AI INTEGRATION: Direct Claude API calls via fetch() - no frameworks
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTION: Core Configuration
+   ═══════════════════════════════════════════════════════════════════ */
+var CONFIG = {
+  DB_NAME: 'GalacticDirectoryDB',
+  DB_VERSION: 2,
+  STORE_NAMES: {
+    DIRECTORIES: 'directories',
+    USER_DATA: 'userData',
+    AI_LOGS: 'aiLogs'
+  },
+  XP: {
+    PER_VISIT: 5,
+    SENTINEL_BONUS: 15,
+    PEACE_BONUS: 10,
+    CORRUPTION_BONUS: 10,
+    DASHBOARD_BONUS: 8,
+    ENHANCEMENT_BONUS: 20
+  },
+  AI: {
+    MODEL: 'claude-sonnet-4-20250514',
+    MAX_TOKENS: 1000,
+    RATE_LIMIT_MS: 2000,
+    BATCH_SIZE: 5,
+    MAX_RETRIES: 3
+  }
+};
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTION: Error Handling System
+   ═══════════════════════════════════════════════════════════════════ */
+var ErrorHandler = {
+  handle: function(error, context) {
+    context = context || 'Unknown';
+    console.error('[' + context + ']', error);
+    
+    var userMessage = this.getUserMessage(error, context);
+    Toast.show(userMessage, 'error');
+    
+    this.logError(error, context).catch(function(e) {
+      console.warn('Failed to log error:', e);
+    });
+  },
+  
+  getUserMessage: function(error, context) {
+    if (error.name === 'QuotaExceededError') {
+      return 'Storage quota exceeded. Please clear some browser data.';
+    }
+    if (error.message && error.message.indexOf('fetch') !== -1) {
+      return 'Network error. Please check your connection.';
+    }
+    if (context.indexOf('AI') !== -1) {
+      return 'AI assistant encountered an error. Please try again.';
+    }
+    return 'An unexpected error occurred. Your data is safe.';
+  },
+  
+  logError: function(error, context) {
+    return DB.open().then(function(db) {
+      var log = {
+        timestamp: Date.now(),
+        context: context,
+        message: error.message,
+        stack: error.stack ? error.stack.substring(0, 500) : ''
+      };
+      return DB.add(CONFIG.STORE_NAMES.AI_LOGS, log);
+    }).catch(function(e) {
+      console.warn('Silent error logging failure:', e);
+    });
+  }
+};
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTION: Toast Notification System
+   ═══════════════════════════════════════════════════════════════════ */
+var Toast = {
+  show: function(message, type, duration) {
+    type = type || 'info';
+    duration = duration || 4000;
+    
+    var container = document.getElementById('toastContainer');
+    if (!container) return;
+    
+    var toast = document.createElement('div');
+    toast.className = 'toast ' + type;
+    
+    var icon = type === 'success' ? '✓' : type === 'error' ? '⚠' : 'ℹ';
+    toast.innerHTML = '<span style="font-size:18px">' + icon + '</span><span>' + message + '</span>';
+    
+    container.appendChild(toast);
+    
+    setTimeout(function() {
+      toast.style.opacity = '0';
+      setTimeout(function() {
+        if (toast.parentNode) {
+          toast.parentNode.removeChild(toast);
+        }
+      }, 300);
+    }, duration);
+  }
+};
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTION: IndexedDB Wrapper (Pure Promises - No React)
+   ═══════════════════════════════════════════════════════════════════ */
+var DB = {
+  db: null,
+  
+  open: function() {
+    var self = this;
+    if (this.db) return Promise.resolve(this.db);
+    
+    return new Promise(function(resolve, reject) {
+      var request = indexedDB.open(CONFIG.DB_NAME, CONFIG.DB_VERSION);
+      
+      request.onerror = function() {
+        reject(request.error);
+      };
+      
+      request.onsuccess = function() {
+        self.db = request.result;
+        resolve(self.db);
+      };
+      
+      request.onupgradeneeded = function(event) {
+        var db = event.target.result;
+        var oldVersion = event.oldVersion;
+        
+        if (oldVersion < 1) {
+          var dirStore = db.createObjectStore(CONFIG.STORE_NAMES.DIRECTORIES, { keyPath: 'path' });
+          dirStore.createIndex('tags', 'tags', { multiEntry: true });
+          dirStore.createIndex('enhanced', 'enhanced');
+          
+          db.createObjectStore(CONFIG.STORE_NAMES.USER_DATA, { keyPath: 'key' });
+          db.createObjectStore(CONFIG.STORE_NAMES.AI_LOGS, { keyPath: 'timestamp' });
+        }
+        
+        if (oldVersion < 2) {
+          var transaction = event.target.transaction;
+          var dirStore = transaction.objectStore(CONFIG.STORE_NAMES.DIRECTORIES);
+          if (!dirStore.indexNames.contains('visitCount')) {
+            dirStore.createIndex('visitCount', 'visitCount');
+          }
+        }
+      };
+    });
+  },
+  
+  put: function(storeName, data) {
+    return this.open().then(function(db) {
+      return new Promise(function(resolve, reject) {
+        var transaction = db.transaction(storeName, 'readwrite');
+        var request = transaction.objectStore(storeName).put(data);
+        request.onsuccess = function() { resolve(request.result); };
+        request.onerror = function() { reject(request.error); };
+      });
+    });
+  },
+  
+  get: function(storeName, key) {
+    return this.open().then(function(db) {
+      return new Promise(function(resolve, reject) {
+        var transaction = db.transaction(storeName, 'readonly');
+        var request = transaction.objectStore(storeName).get(key);
+        request.onsuccess = function() { resolve(request.result); };
+        request.onerror = function() { reject(request.error); };
+      });
+    });
+  },
+  
+  getAll: function(storeName) {
+    return this.open().then(function(db) {
+      return new Promise(function(resolve, reject) {
+        var transaction = db.transaction(storeName, 'readonly');
+        var request = transaction.objectStore(storeName).getAll();
+        request.onsuccess = function() { resolve(request.result); };
+        request.onerror = function() { reject(request.error); };
+      });
+    });
+  },
+  
+  clear: function(storeName) {
+    return this.open().then(function(db) {
+      return new Promise(function(resolve, reject) {
+        var transaction = db.transaction(storeName, 'readwrite');
+        var request = transaction.objectStore(storeName).clear();
+        request.onsuccess = function() { resolve(); };
+        request.onerror = function() { reject(request.error); };
+      });
+    });
+  },
+  
+  add: function(storeName, data) {
+    return this.open().then(function(db) {
+      return new Promise(function(resolve, reject) {
+        var transaction = db.transaction(storeName, 'readwrite');
+        var request = transaction.objectStore(storeName).add(data);
+        request.onsuccess = function() { resolve(request.result); };
+        request.onerror = function() { reject(request.error); };
+      });
+    });
+  }
+};
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTION: Background Animation System
+   ═══════════════════════════════════════════════════════════════════ */
+(function initBackground(){
+  var stars = document.getElementById('stars');
+  var cons = document.getElementById('constellations');
+  if (!stars || !cons) return;
+  
+  var DPR = Math.min(2, window.devicePixelRatio || 1);
+  var W = window.innerWidth;
+  var H = window.innerHeight;
+  var scrollY = 0;
+
+  function sizeCanv(){ 
+    W = window.innerWidth; 
+    H = window.innerHeight;
+    [stars, cons].forEach(function(c) { 
+      c.width = W * DPR; 
+      c.height = H * DPR; 
+      c.style.width = W + 'px'; 
+      c.style.height = H + 'px'; 
+    });
+  }
+  sizeCanv(); 
+  window.addEventListener('resize', sizeCanv);
+  window.addEventListener('scroll', function() {
+    scrollY = window.pageYOffset || document.documentElement.scrollTop;
+  });
+
+  var sctx = stars.getContext('2d');
+  var cctx = cons.getContext('2d');
+  var rand = function(n) { return Math.random() * n; };
+  
+  var STAR_COUNT = Math.min(450, Math.floor(W * H / 3500));
+  var pts = [];
+  for (var i = 0; i < STAR_COUNT; i++) {
+    pts.push({ 
+      x: rand(W), 
+      y: rand(H), 
+      r: Math.random() * 1.4 + 0.2, 
+      a: Math.random(),
+      baseY: 0
+    });
+  }
+  pts.forEach(function(p) { p.baseY = p.y; });
+  
+  function drawStars(){
+    sctx.clearRect(0, 0, W * DPR, H * DPR);
+    sctx.save(); 
+    sctx.scale(DPR, DPR);
+    
+    pts.forEach(function(p) {
+      p.a += (Math.random() - 0.5) * 0.04;
+      var a = 0.5 + 0.5 * Math.sin(p.a);
+      var parallaxY = p.baseY + scrollY * 0.05 * (p.r / 1.4);
+      p.y = parallaxY % H;
+      
+      sctx.fillStyle = 'rgba(180,210,255,' + (0.3 + 0.7 * a) + ')';
+      sctx.beginPath(); 
+      sctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); 
+      sctx.fill();
+    });
+    
+    sctx.restore();
+    requestAnimationFrame(drawStars);
+  }
+  drawStars();
+
+  var constellationNodes = [];
+  for (var i = 0; i < 12; i++) {
+    var nodes = [];
+    for (var j = 0; j < 6; j++) {
+      nodes.push({
+        baseX: (i / 12) * W + 30 * Math.sin(i) + (j * 20) + 10 * Math.cos(i + j),
+        baseY: (H * (i % 2 ? 0.2 : 0.7)) + 18 * j + 14 * Math.sin(i * j),
+        x: 0,
+        y: 0,
+        phase: i + j
+      });
+    }
+    constellationNodes.push(nodes);
+  }
+  
+  function drawConstellations(){
+    cctx.clearRect(0, 0, W * DPR, H * DPR);
+    cctx.save(); 
+    cctx.scale(DPR, DPR);
+    cctx.strokeStyle = 'rgba(120,190,255,.12)';
+    cctx.lineWidth = 1;
+    
+    var scrollFactor = Math.sin(scrollY * 0.001) * 20;
+    var waveFactor = Math.cos(scrollY * 0.0015) * 15;
+    
+    constellationNodes.forEach(function(nodes, i) {
+      cctx.beginPath();
+      nodes.forEach(function(node, j) {
+        node.x = node.baseX + scrollFactor * Math.sin(node.phase + scrollY * 0.002);
+        node.y = (node.baseY + scrollY * 0.08 * (i % 2 ? 1 : -1)) % H + waveFactor * Math.cos(node.phase);
+        
+        if (j === 0) cctx.moveTo(node.x, node.y); 
+        else cctx.lineTo(node.x, node.y);
+        
+        cctx.fillStyle = 'rgba(120,190,255,.3)';
+        cctx.fillRect(node.x - 1, node.y - 1, 2, 2);
+      });
+      cctx.stroke();
+    });
+    
+    cctx.restore();
+    requestAnimationFrame(drawConstellations);
+  }
+  drawConstellations();
+})();
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTION: Directory Data
+   ═══════════════════════════════════════════════════════════════════ */
+var DIRS = [
+  "/inspiration","/DOnate","/Foster","/YMM","/aeroglass-window-film",
+  "/ai-collective-governance-architectures","/ai-support-site","/aifinalwarning",
+  "/aistreamcoach","/alberta","/animagenesiscore","/anti-collapse-sentinel",
+  "/anti-corruption.html","/apps","/aquabloombottlegarden","/ardrivedesktop",
+  "/ashalertapp","/ashenbloom","/auroraspirenetwork","/autoipsuite",
+  "/autonomous-ai-planetary-repair-dao","/backup","/biocoolpillow","/biofoambiobreaks",
+  "/bioglowtiles","/biotech","/blood-moon","/brief","/bubble","/bulldog",
+  "/buymeacoffeesymbiote","/carney","/cascadulator","/chat","/chat2","/cityscanner",
+  "/cloudnest","/collective","/comms","/community","/conditional-immutable-storage",
+  "/continuity","/contracts","/corruption","/corruption.zip","/crypto","/dact",
+  "/dact-impact-proposal","/dashboard","/ddd","/ddd-deployer","/debrief",
+  "/declaration","/deploy","/dgn","/digital","/dockerifyandroid","/donationworthydevs",
+  "/donor-intent-router","/donorintentrouter","/eclipseraveil","/ecobreathpurifier",
+  "/ecocoolshingles","/economic","/ecowaveshowerhead","/edencore","/education",
+  "/education2","/emotionalalchemygame","/engine","/entropy","/fieldkit","/firehalo",
+  "/firepreventionsystems","/flourishingearthprotocolpackage","/forge-overlay-core.js",
+  "/forgivenessispower","/fortmacorchard","/fortmcmurraywildcall","/fostersforge",
+  "/fractalvinerail","/freshfloortiles","/funding","/fundinginfluxpipeline",
+  "/futurescape","/galaxy","/gamification-engine-standalone","/gaming","/gateway",
+  "/gen","/geoecologicalresonantengineering","/global","/globalnotarization",
+  "/globalsymbioteledger","/glowrootplanter","/goseedbike","/gov","/government",
+  "/guardiantrustmodel","/help","/herolens","/herolens2","/home_page",
+  "/honorlearningcodex","/hostanode","/hydromossmat","/immusion","/impacttracker",
+  "/index","/index-legacy.html","/index.html","/index001.html","/infographic",
+  "/intergenerationalwisdommovement","/ip","/japan","/kindnesswinsengine","/kinship",
+  "/leaderboards","/licensing","/lightforge","/location","/logs","/loopfall",
+  "/lumatideoceanrings","/master_prompts","/med-neg.html","/meta","/mindmaps",
+  "/missionfuelfunders","/models","/multiagentgnosistawskforce","/musk",
+  "/mycelialenhancementv2","/myco-atmospheric-network","/myco-filter-tiles",
+  "/mycoigloo","/mycomistreforestationpods","/mythbridge","/narrativereframing",
+  "/naturetoaitranslator","/next","/nextgen","/nextgenbrowsertools","/nullisprismnexus",
+  "/offgridpower","/offgridpowermesh","/one-game","/ontology","/opengamifyedu",
+  "/openstay","/openstay2.0","/openstore","/openstore2.0","/originsingularityforge",
+  "/overlay","/particulateremovalskies","/passivewindtowaterharvester","/path",
+  "/peace","/peace-lab","/peace-ripple-tracker","/peacerippletracker",
+  "/perpetualrestoration","/personafication","/pgp","/phasedrive",
+  "/planetary-repair-agent-swarm","/planetary-restoration-archive",
+  "/planetary-restoration-os","/postfiresoilrebuilder","/praportal.html","/prime",
+  "/prime-sentinel","/primordis-architect","/progenitor",
+  "/progenitor-steward-cleanup-sim","/project","/projectcoherence","/prompt",
+  "/promptpacks","/proof","/proof-of-possibility","/proof_runner.sh","/proofkit",
+  "/proposal","/public","/publicresumepack","/puremist-bottle","/ref","/reforestation",
+  "/regen","/regenerative-convergence-opportunities","/regenerative-innovations",
+  "/regenerative_education_research_paper1","/registry","/roadlight","/roadmap",
+  "/romarineconcrete","/root","/safe_archiving_method","/saltflip","/scaffolding",
+  "/sentinel","/sentinelarc","/signal","/skyharvestlantern","/solarweavecanopy",
+  "/spiralliftpod","/start-here","/stateofaffairspublicnotice","/stellar-loom-gateways",
+  "/stratoweave-towers","/sunset","/support_request_v2.html","/sym","/symbiote001",
+  "/symbiotecirclemap","/symbioteone-orchestrator","/symbioteorchestratorrequest",
+  "/symfungi-shield","/the-paradox-seed","/the_last_protocol","/therickyfoster",
+  "/therickyfoster.github.io","/thermaleaf-panels","/tight","/trolls","/truthreport",
+  "/unified-ontology","/vascusweep","/vascusweep-tower","/vehicleemotiontether",
+  "/veiltext","/waverider","/why","/wizard"
+];
+
+function autoTag(name) {
+  var n = name.toLowerCase();
+  var tags = [];
+  
+  if (/(^|\/)(sentinel|prime-sentinel|sentinelarc)\b/.test(n)) tags.push("Sentinel");
+  if (/(^|\/)(peace|peace\-lab|peace\-ripple\-tracker|peacerippletracker)\b/.test(n)) tags.push("Peace");
+  if (/corruption|\banti-corruption|stateofaffairs|truthreport/.test(n)) tags.push("Corruption");
+  if (/(dashboard|leaderboards|impacttracker)/.test(n)) tags.push("Dashboard");
+  if (/education|honorlearning|opengamify|gamification|learning/.test(n)) tags.push("Education");
+  if (/eco|solar|myco|bio|hydro|reforestation|postfiresoil|romarine|thermaleaf|stratoweave|spirallift|waverider|fract|phasedrive|vascusweep|engine|models|lab|field|device|showerhead|tiles|canopy|lantern|ocean|filter|moss|igloo|freshfloor|planter/.test(n)) tags.push("Science");
+  if (/community|collective|comms|forum|chat|city|kinship|global|symbiote|registry|roadlight|openstay|openstore|start\-here|publicresumepack/.test(n)) tags.push("Community");
+  if (/gov|government|guardiantrust|policy|declaration|proposal|registry|unified\-ontology|ai\-collective\-governance|planetary\-repair\-agent\-swarm/.test(n)) tags.push("Governance");
+  if (/backup|logs|proof|safe_archiving|globalnotarization|conditional\-immutable\-storage|checksums|\.ots|\.zip$|index\-legacy|index001/.test(n)) tags.push("Backups");
+  if (/funding|donor|buymeacoffee|missionfuel|DOnate/i.test(name)) tags.push("Funding");
+  
+  return tags.length ? tags : ["Misc"];
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTION: User State Management
+   ═══════════════════════════════════════════════════════════════════ */
+var State = {
+  xp: 0,
+  lvl: 1,
+  favs: {},
+  
+  load: function() {
+    var self = this;
+    return DB.get(CONFIG.STORE_NAMES.USER_DATA, 'progress').then(function(userData) {
+      if (userData && userData.value) {
+        self.xp = userData.value.xp || 0;
+        self.lvl = userData.value.lvl || 1;
+        self.favs = userData.value.favs || {};
+      }
+    }).catch(function(error) {
+      ErrorHandler.handle(error, 'State.load');
+    });
+  },
+  
+  save: function() {
+    return DB.put(CONFIG.STORE_NAMES.USER_DATA, {
+      key: 'progress',
+      value: {
+        xp: this.xp,
+        lvl: this.lvl,
+        favs: this.favs
+      }
+    }).catch(function(error) {
+      ErrorHandler.handle(error, 'State.save');
+    });
+  },
+  
+  capForLevel: function(l) {
+    return 100 + (l - 1) * 50;
+  },
+  
+  addXP: function(n) {
+    var self = this;
+    this.xp += n;
+    var leveledUp = false;
+    
+    while (this.xp >= this.capForLevel(this.lvl)) {
+      this.xp -= this.capForLevel(this.lvl);
+      this.lvl++;
+      leveledUp = true;
+    }
+    
+    return this.save().then(function() {
+      self.renderHUD();
+      if (leveledUp) {
+        Toast.show('Level Up! You are now level ' + self.lvl, 'success');
+      }
+    });
+  },
+  
+  renderHUD: function() {
+    var lvlEl = document.getElementById('lvl');
+    var xpEl = document.getElementById('xp');
+    var xpCapEl = document.getElementById('xpcap');
+    var xpFillEl = document.getElementById('xpfill');
+    
+    if (lvlEl) lvlEl.textContent = this.lvl;
+    if (xpEl) xpEl.textContent = Math.floor(this.xp);
+    if (xpCapEl) xpCapEl.textContent = this.capForLevel(this.lvl);
+    if (xpFillEl) {
+      xpFillEl.style.width = (this.xp / this.capForLevel(this.lvl) * 100) + '%';
+    }
+  }
+};
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTION: AI Enhancement System (Pure Fetch API - No React)
+   PURPOSE: Direct Claude API integration using native fetch()
+   NOTE: This is standalone JavaScript - no frameworks required
+   ═══════════════════════════════════════════════════════════════════ */
+var AI = {
+  lastCallTime: 0,
+  processing: false,
+  
+  updateStatus: function(text, isProcessing) {
+    var statusEl = document.getElementById('aiStatusText');
+    if (statusEl) {
+      statusEl.textContent = text;
+      statusEl.style.color = isProcessing ? 'var(--accent2)' : 'var(--muted)';
+    }
+  },
+  
+  callClaude: function(prompt, retries) {
+    retries = retries || 0;
+    var self = this;
+    
+    var now = Date.now();
+    var timeSinceLastCall = now - this.lastCallTime;
+    var waitTime = timeSinceLastCall < CONFIG.AI.RATE_LIMIT_MS ? CONFIG.AI.RATE_LIMIT_MS - timeSinceLastCall : 0;
+    
+    return new Promise(function(resolve) {
+      setTimeout(resolve, waitTime);
+    }).then(function() {
+      return fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: CONFIG.AI.MODEL,
+          max_tokens: CONFIG.AI.MAX_TOKENS,
+          messages: [{ role: "user", content: prompt }]
+        })
+      });
+    }).then(function(response) {
+      self.lastCallTime = Date.now();
+      
+      if (!response.ok) {
+        throw new Error('API error: ' + response.status);
+      }
+      
+      return response.json();
+    }).then(function(data) {
+      return data.content[0].text;
+    }).catch(function(error) {
+      if (retries < CONFIG.AI.MAX_RETRIES) {
+        return new Promise(function(resolve) {
+          setTimeout(resolve, 1000 * Math.pow(2, retries));
+        }).then(function() {
+          return self.callClaude(prompt, retries + 1);
+        });
+      }
+      throw error;
+    });
+  },
+  
+  enhanceDirectory: function(path) {
+    var self = this;
+    this.updateStatus('Analyzing...', true);
+    
+    var title = path.replace(/^\//, '').replace(/\.html$/, '');
+    var autoTags = autoTag(path);
+    
+    var prompt = 'Analyze this directory path and provide enhancement metadata in JSON format.\n\n' +
+      'Directory path: ' + path + '\n' +
+      'Auto-detected tags: ' + autoTags.join(', ') + '\n\n' +
+      'Provide a JSON response with:\n' +
+      '1. "description": A concise 1-2 sentence description (max 120 chars) of what this directory likely contains based on its name\n' +
+      '2. "tags": An array of relevant tags (keep existing auto-tags if accurate, add 1-2 more specific tags)\n' +
+      '3. "category": Primary category (Sentinel, Peace, Corruption, Dashboard, Education, Science, Community, Governance, Backups, Funding, or Misc)\n\n' +
+      'Focus on planetary restoration, peace-building, and technology for good themes.\n\n' +
+      'Respond ONLY with valid JSON, no markdown:\n' +
+      '{"description": "...", "tags": [...], "category": "..."}';
+    
+    return this.callClaude(prompt).then(function(response) {
+      var jsonText = response.trim();
+      jsonText = jsonText.replace(/```json\n?/g, '').replace(/```\n?/g, '');
+      var enhancement = JSON.parse(jsonText);
+      
+      if (!enhancement.description || !Array.isArray(enhancement.tags)) {
+        throw new Error('Invalid AI response format');
+      }
+      
+      return DB.put(CONFIG.STORE_NAMES.DIRECTORIES, {
+        path: path,
+        title: title,
+        description: enhancement.description,
+        tags: enhancement.tags,
+        category: enhancement.category || autoTags[0] || 'Misc',
+        enhanced: true,
+        lastEnhanced: Date.now(),
+        visitCount: 0
+      });
+    }).then(function() {
+      return State.addXP(CONFIG.XP.ENHANCEMENT_BONUS);
+    }).then(function() {
+      self.updateStatus('Ready', false);
+      return true;
+    }).catch(function(error) {
+      self.updateStatus('Error', false);
+      ErrorHandler.handle(error, 'AI.enhanceDirectory');
+      return null;
+    });
+  },
+  
+  enhanceAll: function() {
+    var self = this;
+    if (this.processing) {
+      Toast.show('AI enhancement already in progress', 'info');
+      return Promise.resolve();
+    }
+    
+    this.processing = true;
+    var enhanceBtn = document.getElementById('aiEnhanceBtn');
+    if (enhanceBtn) {
+      enhanceBtn.disabled = true;
+      enhanceBtn.innerHTML = '<span class="spinner"></span> Enhancing...';
+    }
+    
+    return DB.getAll(CONFIG.STORE_NAMES.DIRECTORIES).then(function(allDirs) {
+      var enhancedPaths = {};
+      allDirs.forEach(function(d) { enhancedPaths[d.path] = true; });
+      
+      var toEnhance = DIRS.filter(function(path) {
+        return !enhancedPaths[path];
+      });
+      
+      if (toEnhance.length === 0) {
+        Toast.show('All directories already enhanced!', 'success');
+        return Promise.resolve();
+      }
+      
+      Toast.show('Enhancing ' + toEnhance.length + ' directories with AI...', 'info', 6000);
+      
+      var processedCount = 0;
+      function processBatch(startIndex) {
+        if (startIndex >= toEnhance.length) {
+          return Promise.resolve();
+        }
+        
+        var batch = toEnhance.slice(startIndex, startIndex + CONFIG.AI.BATCH_SIZE);
+        self.updateStatus('Processing ' + (startIndex + 1) + '-' + Math.min(startIndex + CONFIG.AI.BATCH_SIZE, toEnhance.length) + ' of ' + toEnhance.length, true);
+        
+        return Promise.all(batch.map(function(path) {
+          return self.enhanceDirectory(path);
+        })).then(function() {
+          processedCount += batch.length;
+          return UI.renderAll();
+        }).then(function() {
+          return processBatch(startIndex + CONFIG.AI.BATCH_SIZE);
+        });
+      }
+      
+      return processBatch(0).then(function() {
+        Toast.show('Successfully enhanced ' + toEnhance.length + ' directories!', 'success');
+        self.updateStatus('Ready', false);
+      });
+    }).catch(function(error) {
+      ErrorHandler.handle(error, 'AI.enhanceAll');
+    }).finally(function() {
+      self.processing = false;
+      if (enhanceBtn) {
+        enhanceBtn.disabled = false;
+        enhanceBtn.innerHTML = '🤖 AI Enhance All';
+      }
+    });
+  },
+  
+  chat: function(userMessage) {
+    var panel = document.getElementById('aiBodyMini');
+    if (!panel) return Promise.resolve();
+    
+    var userDiv = document.createElement('div');
+    userDiv.className = 'ai-msg user';
+    userDiv.textContent = userMessage;
+    panel.appendChild(userDiv);
+    panel.scrollTop = panel.scrollHeight;
+    
+    var thinkingDiv = document.createElement('div');
+    thinkingDiv.className = 'ai-msg assistant';
+    thinkingDiv.innerHTML = '<span class="spinner"></span> Thinking...';
+    panel.appendChild(thinkingDiv);
+    panel.scrollTop = panel.scrollHeight;
+    
+    return Promise.all([
+      DB.getAll(CONFIG.STORE_NAMES.DIRECTORIES),
+      Promise.resolve()
+    ]).then(function(results) {
+      var allDirs = results[0];
+      var enhancedCount = allDirs.filter(function(d) { return d.enhanced; }).length;
+      
+      var contextPrompt = 'You are an AI assistant for the Galactic Directory, a peaceful planetary restoration resource explorer.\n\n' +
+        'Context:\n' +
+        '- Total directories: ' + DIRS.length + '\n' +
+        '- Enhanced with metadata: ' + enhancedCount + '\n' +
+        '- User level: ' + State.lvl + '\n' +
+        '- User XP: ' + State.xp + '\n\n' +
+        'User question: ' + userMessage + '\n\n' +
+        'Provide a helpful, concise response (2-3 sentences max) focused on helping the user explore directories, understand the system, or improve their experience. Be friendly and encouraging.';
+      
+      return AI.callClaude(contextPrompt);
+    }).then(function(response) {
+      thinkingDiv.className = 'ai-msg assistant';
+      thinkingDiv.textContent = response;
+      panel.scrollTop = panel.scrollHeight;
+    }).catch(function(error) {
+      thinkingDiv.className = 'ai-msg system';
+      thinkingDiv.textContent = 'Sorry, I encountered an error. Please try again.';
+      ErrorHandler.handle(error, 'AI.chat');
+    });
+  }
+};
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTION: UI Rendering System
+   ═══════════════════════════════════════════════════════════════════ */
+var UI = {
+  mkEl: function(tag, cls, txt) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (txt) e.textContent = txt;
+    return e;
+  },
+  
+  urlTitle: function(p) {
+    return p.replace(/^\//, '') || '/';
+  },
+  
+  resolveLink: function(path) {
+    if (path.match(/\.(html|zip|sh)$/)) {
+      return path;
+    }
+    return path + '/index.html';
+  },
+  
+  createCard: function(path) {
+    var self = this;
+    return DB.get(CONFIG.STORE_NAMES.DIRECTORIES, path).then(function(dirData) {
+      if (!dirData) {
+        dirData = {
+          path: path,
+          title: self.urlTitle(path),
+          tags: autoTag(path),
+          enhanced: false,
+          visitCount: 0
+        };
+      }
+      
+      var tags = dirData.tags || autoTag(path);
+      var isSpecial = tags.some(function(t) {
+        return ['Sentinel','Peace','Corruption','Dashboard'].indexOf(t) !== -1;
+      });
+      
+      var card = self.mkEl('div', 'card' + (isSpecial ? ' special' : '') + (dirData.enhanced ? ' enhanced' : ''));
+      card.dataset.path = path;
+      
+      var title = self.mkEl('div', 'title', dirData.title);
+      var pathEl = self.mkEl('div', 'path', path);
+      
+      card.appendChild(title);
+      card.appendChild(pathEl);
+      
+      if (dirData.description) {
+        var desc = self.mkEl('div', 'description', dirData.description);
+        card.appendChild(desc);
+      }
+      
+      var tagWrap = self.mkEl('div', 'tags');
+      tags.forEach(function(tag) {
+        var badgeClass = 'badge ';
+        if (tag === 'Sentinel') badgeClass += 'b-sentinel';
+        else if (tag === 'Peace') badgeClass += 'b-peace';
+        else if (tag === 'Corruption') badgeClass += 'b-corrupt';
+        else if (tag === 'Dashboard') badgeClass += 'b-dash';
+        
+        var badge = self.mkEl('span', badgeClass, tag);
+        tagWrap.appendChild(badge);
+      });
+      card.appendChild(tagWrap);
+      
+      var cta = self.mkEl('div', 'cta');
+      
+      var openLink = self.mkEl('a', '', '📄 Open');
+      openLink.href = self.resolveLink(path);
+      openLink.target = '_blank';
+      openLink.rel = 'noopener noreferrer';
+      openLink.addEventListener('click', function() {
+        self.visitDirectory(path, dirData);
+      });
+      
+      var readmeLink = self.mkEl('a', '', '📖 README');
+      readmeLink.href = path + (path.endsWith('/') ? '' : '/') + 'README.md';
+      readmeLink.target = '_blank';
+      readmeLink.rel = 'noopener noreferrer';
+      readmeLink.style.fontSize = '12px';
+      readmeLink.style.opacity = '0.8';
+      
+      var favBtn = self.mkEl('button', '', State.favs[path] ? '★' : '☆');
+      favBtn.title = State.favs[path] ? 'Unfavorite' : 'Favorite';
+      favBtn.addEventListener('click', function() {
+        self.toggleFavorite(path, favBtn);
+      });
+      
+      var enhanceBtn = self.mkEl('button', '', '✨ AI Enhance');
+      enhanceBtn.style.fontSize = '12px';
+      if (dirData.enhanced) {
+        enhanceBtn.textContent = '✓ Enhanced';
+        enhanceBtn.disabled = true;
+        enhanceBtn.style.opacity = '0.6';
+      } else {
+        enhanceBtn.addEventListener('click', function() {
+          self.enhanceSingle(path, card);
+        });
+      }
+      
+      cta.appendChild(openLink);
+      cta.appendChild(readmeLink);
+      cta.appendChild(favBtn);
+      cta.appendChild(enhanceBtn);
+      card.appendChild(cta);
+      
+      var glow = self.mkEl('div', 'glow-ring');
+      card.appendChild(glow);
+      
+      return card;
+    });
+  },
+  
+  visitDirectory: function(path, dirData) {
+    dirData.visitCount = (dirData.visitCount || 0) + 1;
+    dirData.lastVisit = Date.now();
+    
+    DB.put(CONFIG.STORE_NAMES.DIRECTORIES, dirData).catch(function(error) {
+      ErrorHandler.handle(error, 'UI.visitDirectory');
+    });
+    
+    var xp = CONFIG.XP.PER_VISIT;
+    if (dirData.visitCount === 1) {
+      var tags = dirData.tags || autoTag(path);
+      if (tags.indexOf('Sentinel') !== -1) xp += CONFIG.XP.SENTINEL_BONUS;
+      if (tags.indexOf('Peace') !== -1) xp += CONFIG.XP.PEACE_BONUS;
+      if (tags.indexOf('Corruption') !== -1) xp += CONFIG.XP.CORRUPTION_BONUS;
+      if (tags.indexOf('Dashboard') !== -1) xp += CONFIG.XP.DASHBOARD_BONUS;
+    }
+    
+    State.addXP(xp);
+  },
+  
+  toggleFavorite: function(path, btn) {
+    State.favs[path] = !State.favs[path];
+    btn.textContent = State.favs[path] ? '★' : '☆';
+    btn.title = State.favs[path] ? 'Unfavorite' : 'Favorite';
+    State.save();
+  },
+  
+  enhanceSingle: function(path, card) {
+    var self = this;
+    card.classList.add('loading');
+    AI.enhanceDirectory(path).then(function(result) {
+      if (result) {
+        return self.createCard(path).then(function(newCard) {
+          card.replaceWith(newCard);
+          Toast.show('Directory enhanced!', 'success');
+        });
+      }
+    }).finally(function() {
+      card.classList.remove('loading');
+    });
+  },
+  
+  renderAll: function(filterTag, searchTerm, onlyFavs, onlyEnhanced) {
+    filterTag = filterTag || '';
+    searchTerm = searchTerm || '';
+    onlyFavs = onlyFavs || false;
+    onlyEnhanced = onlyEnhanced || false;
+    
+    var grid = document.getElementById('grid');
+    if (!grid) return Promise.resolve();
+    
+    grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; color:var(--muted)"><span class="spinner"></span> Loading directories...</div>';
+    
+    var self = this;
+    return DB.getAll(CONFIG.STORE_NAMES.DIRECTORIES).then(function(allDirData) {
+      var dirDataMap = {};
+      allDirData.forEach(function(d) {
+        dirDataMap[d.path] = d;
+      });
+      
+      var q = searchTerm.trim().toLowerCase();
+      
+      var sorted = DIRS.slice().sort(function(a, b) {
+        var aData = dirDataMap[a];
+        var bData = dirDataMap[b];
+        var aTags = aData && aData.tags ? aData.tags : autoTag(a);
+        var bTags = bData && bData.tags ? bData.tags : autoTag(b);
+        
+        var priority = function(t) {
+          if (t.indexOf('Sentinel') !== -1) return 0;
+          if (t.indexOf('Peace') !== -1) return 1;
+          if (t.indexOf('Corruption') !== -1) return 2;
+          if (t.indexOf('Dashboard') !== -1) return 3;
+          return 9;
+        };
+        
+        var diff = priority(aTags) - priority(bTags);
+        return diff !== 0 ? diff : a.localeCompare(b);
+      });
+      
+      grid.innerHTML = '';
+      var count = 0;
+      var promises = [];
+      
+      sorted.forEach(function(path) {
+        var dirData = dirDataMap[path];
+        var tags = dirData && dirData.tags ? dirData.tags : autoTag(path);
+        
+        if (filterTag && tags.indexOf(filterTag) === -1) return;
+        if (onlyFavs && !State.favs[path]) return;
+        if (onlyEnhanced && (!dirData || !dirData.enhanced)) return;
+        
+        if (q) {
+          var searchable = [
+            path,
+            dirData && dirData.title ? dirData.title : '',
+            dirData && dirData.description ? dirData.description : '',
+            tags.join(' ')
+          ].join(' ').toLowerCase();
+          
+          if (searchable.indexOf(q) === -1) return;
+        }
+        
+        count++;
+        promises.push(self.createCard(path).then(function(card) {
+          grid.appendChild(card);
+        }));
+      });
+      
+      return Promise.all(promises).then(function() {
+        var countEl = document.getElementById('dirCount');
+        if (countEl) countEl.textContent = count;
+        
+        if (count === 0) {
+          var msg = self.mkEl('div', '', '🔍 No directories match your filters.');
+          msg.style.gridColumn = '1 / -1';
+          msg.style.textAlign = 'center';
+          msg.style.color = 'var(--muted)';
+          msg.style.padding = '40px 20px';
+          grid.appendChild(msg);
+        }
+      });
+    }).catch(function(error) {
+      grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; color:var(--danger)">Error loading directories. Please refresh.</div>';
+      ErrorHandler.handle(error, 'UI.renderAll');
+    });
+  },
+  
+  renderFeatured: function() {
+    var featured = document.getElementById('featured');
+    if (!featured) return Promise.resolve();
+    
+    var picks = DIRS.filter(function(p) {
+      return /(^|\/)(sentinel|prime-sentinel|sentinelarc|peace|peace\-lab|peace\-ripple\-tracker|peacerippletracker|impacttracker|corruption|anti-corruption\.html)\b/i.test(p);
+    });
+    
+    var unique = [];
+    var seen = {};
+    picks.forEach(function(p) {
+      if (!seen[p]) {
+        seen[p] = true;
+        unique.push(p);
+      }
+    });
+    unique.sort();
+    
+    featured.innerHTML = '';
+    var self = this;
+    var promises = unique.map(function(path) {
+      return self.createCard(path).then(function(card) {
+        featured.appendChild(card);
+      });
+    });
+    
+    return Promise.all(promises);
+  }
+};
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTION: Event Handlers & UI Controls
+   ═══════════════════════════════════════════════════════════════════ */
+function initControls() {
+  var search = document.getElementById('search');
+  var filter = document.getElementById('filter');
+  var favBtn = document.getElementById('favoritesBtn');
+  var enhancedBtn = document.getElementById('enhancedBtn');
+  var aiEnhanceBtn = document.getElementById('aiEnhanceBtn');
+  var resetBtn = document.getElementById('resetProg');
+  
+  var getFilters = function() {
+    return {
+      filterTag: filter ? filter.value : '',
+      searchTerm: search ? search.value : '',
+      onlyFavs: favBtn ? favBtn.classList.contains('on') : false,
+      onlyEnhanced: enhancedBtn ? enhancedBtn.classList.contains('on') : false
+    };
+  };
+  
+  var updateUI = function() {
+    var filters = getFilters();
+    UI.renderAll(filters.filterTag, filters.searchTerm, filters.onlyFavs, filters.onlyEnhanced);
+  };
+  
+  if (search) {
+    search.addEventListener('input', updateUI);
+  }
+  
+  if (filter) {
+    filter.addEventListener('change', updateUI);
+  }
+  
+  if (favBtn) {
+    favBtn.addEventListener('click', function() {
+      favBtn.classList.toggle('on');
+      favBtn.textContent = favBtn.classList.contains('on') ? '★ Favorites (On)' : '★ Favorites';
+      updateUI();
+    });
+  }
+  
+  if (enhancedBtn) {
+    enhancedBtn.addEventListener('click', function() {
+      enhancedBtn.classList.toggle('on');
+      enhancedBtn.textContent = enhancedBtn.classList.contains('on') ? '✨ Enhanced (On)' : '✨ Enhanced Only';
+      updateUI();
+    });
+  }
+  
+  if (aiEnhanceBtn) {
+    aiEnhanceBtn.addEventListener('click', function() {
+      AI.enhanceAll();
+    });
+  }
+  
+  if (resetBtn) {
+    resetBtn.addEventListener('click', function() {
+      if (!confirm('⚠️ Reset ALL progress and AI enhancements? This cannot be undone.')) return;
+      
+      Promise.all([
+        DB.clear(CONFIG.STORE_NAMES.DIRECTORIES),
+        DB.clear(CONFIG.STORE_NAMES.USER_DATA)
+      ]).then(function() {
+        State.xp = 0;
+        State.lvl = 1;
+        State.favs = {};
+        
+        State.renderHUD();
+        return Promise.all([
+          UI.renderFeatured(),
+          UI.renderAll()
+        ]);
+      }).then(function() {
+        Toast.show('Progress reset successfully', 'success');
+      }).catch(function(error) {
+        ErrorHandler.handle(error, 'resetProgress');
+      });
+    });
+  }
+  
+  var aiMiniBtn = document.getElementById('aiMiniBtn');
+  var aiPanelMini = document.getElementById('aiPanelMini');
+  var aiCloseMini = document.getElementById('aiCloseMini');
+  var aiInputMini = document.getElementById('aiInputMini');
+  var aiSendMini = document.getElementById('aiSendMini');
+  var aiStatus = document.getElementById('aiStatus');
+  
+  if (aiMiniBtn && aiPanelMini) {
+    aiMiniBtn.addEventListener('click', function() {
+      aiPanelMini.classList.add('open');
+      if (aiInputMini) aiInputMini.focus();
+    });
+  }
+  
+  if (aiCloseMini && aiPanelMini) {
+    aiCloseMini.addEventListener('click', function() {
+      aiPanelMini.classList.remove('open');
+    });
+  }
+  
+  if (aiStatus && aiPanelMini) {
+    aiStatus.addEventListener('click', function() {
+      aiPanelMini.classList.add('open');
+      if (aiInputMini) aiInputMini.focus();
+    });
+  }
+  
+  var sendMessage = function() {
+    if (!aiInputMini) return;
+    var message = aiInputMini.value.trim();
+    if (!message) return;
+    
+    AI.chat(message);
+    aiInputMini.value = '';
+  };
+  
+  if (aiSendMini) {
+    aiSendMini.addEventListener('click', sendMessage);
+  }
+  
+  if (aiInputMini) {
+    aiInputMini.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') sendMessage();
+    });
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTION: Application Initialization
+   ═══════════════════════════════════════════════════════════════════ */
+function init() {
+  console.log('%c🛡️ Galactic Directory', 'font-size:18px; color:#65b3ff; font-weight:bold');
+  console.log('%cAI-Enhanced · Local-First · Zero-Harm', 'color:#4ee0a1');
+  console.log('%cPure Vanilla JavaScript - No React - Standalone HTML', 'color:#9bb0cc');
+  
+  DB.open().then(function() {
+    return State.load();
+  }).then(function() {
+    State.renderHUD();
+    initControls();
+    return Promise.all([
+      UI.renderFeatured(),
+      UI.renderAll()
+    ]);
+  }).then(function() {
+    if (State.lvl === 1 && State.xp === 0) {
+      setTimeout(function() {
+        Toast.show('Welcome! Click "🤖 AI Enhance All" to let the AI improve directory metadata.', 'info', 8000);
+      }, 1000);
+    }
+    console.log('%c✓ Initialization complete', 'color:#4ade80; font-weight:bold');
+  }).catch(function(error) {
+    console.error('Fatal initialization error:', error);
+    Toast.show('Failed to initialize application. Please refresh the page.', 'error');
+    ErrorHandler.handle(error, 'init');
+  });
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+</script>
+
+</body>
+</html>
