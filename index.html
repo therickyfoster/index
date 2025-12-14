@@ -3,33 +3,59 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Galactic Directory — Sentinel Edition</title>
-<meta name="description" content="Self-improving, AI-enhanced directory for the Planetary Restoration Archive with constellation visuals, gamification, and intelligent metadata management.">
+<title>Galactic Directory — Sentinel Edition Enhanced</title>
+<meta name="description" content="Self-improving, AI-enhanced directory with advanced morphing animations, particle effects, and futuristic visuals for the Planetary Restoration Archive.">
 <!--
-  ╔═══════════════════════════════════════════════════════════════════════╗
-  ║  ZERO-HARM / ANTI-INVERSION NOTICE                                    ║
-  ╠═══════════════════════════════════════════════════════════════════════╣
-  ║  This tool is designed for peaceful exploration of planetary          ║
-  ║  restoration resources. It is NOT intended for:                       ║
-  ║  • Surveillance, tracking, or profiling                               ║
-  ║  • Weaponization or harmful applications                              ║
-  ║  • Exploitation of user data                                          ║
-  ║                                                                        ║
-  ║  AI Assistant: Uses Claude API for metadata enhancement only.         ║
-  ║  All data stored locally (IndexedDB). No external tracking.           ║
-  ║  Open source spirit. License: MIT-style respect.                      ║
-  ╚═══════════════════════════════════════════════════════════════════════╝
+  ╔═══════════════════════════════════════════════════════════════════╗
+  ║  ZERO-HARM / ANTI-INVERSION NOTICE                                ║
+  ╠═══════════════════════════════════════════════════════════════════╣
+  ║  This tool is designed for peaceful exploration of planetary      ║
+  ║  restoration resources. It is NOT intended for:                   ║
+  ║  • Surveillance, tracking, or profiling                           ║
+  ║  • Weaponization or harmful applications                          ║
+  ║  • Exploitation of user data                                      ║
+  ║                                                                    ║
+  ║  AI Assistant: Uses Claude API for metadata enhancement only.     ║
+  ║  All data stored locally (IndexedDB). No external tracking.       ║
+  ║  Open source spirit. License: MIT-style respect.                  ║
+  ╚═══════════════════════════════════════════════════════════════════╝
 -->
 <style>
-  /* ═══════════════════════════════════════════════════════════════════
-     SECTION: CSS Variables & Theme System
-     PURPOSE: Centralized design tokens with dark mode support
-     ═══════════════════════════════════════════════════════════════════ */
+  /* ═════════════════════════════════════════════════════════════════
+     SECTION: CSS Variables & Enhanced Theme System
+     PURPOSE: Centralized design tokens with multiple theme support
+     FEATURES: Medieval, Space, Anime, Cyberpunk themes + auto dark mode
+     ═════════════════════════════════════════════════════════════════ */
   :root{
+    /* Base Space Theme (Default) */
     --bg:#070b14; --bg2:#0b1324; --panel:#0f1d36; --ink:#eaf1ff; --muted:#9bb0cc;
     --accent:#65b3ff; --accent2:#4ee0a1; --warn:#ffb84d; --danger:#ff6b6b; --glow:#8ad7ff;
     --good:#3bd19b; --sentinel:#7cd2ff; --peace:#7fffd4; --corrupt:#ff7f9c; --dash:#ffd166;
     --success:#4ade80; --info:#60a5fa;
+    
+    /* Animation Variables */
+    --morph-speed: 0.6s;
+    --expand-speed: 0.4s;
+    --particle-speed: 2s;
+    --glow-pulse: 2s;
+  }
+  
+  /* Medieval Theme */
+  [data-theme="medieval"]{
+    --bg:#1a1410; --bg2:#251e18; --panel:#3a2f22; --ink:#f5e6d3; --muted:#c4a57b;
+    --accent:#d4a574; --accent2:#8fbc8f; --glow:#daa520;
+  }
+  
+  /* Anime Theme */
+  [data-theme="anime"]{
+    --bg:#ffe6f0; --bg2:#ffd6e8; --panel:#ffb3d9; --ink:#4a0e4e; --muted:#8b4789;
+    --accent:#ff69b4; --accent2:#ff1493; --glow:#ff69b4;
+  }
+  
+  /* Cyberpunk Theme */
+  [data-theme="cyberpunk"]{
+    --bg:#0a0e27; --bg2:#1a1b3a; --panel:#2d1b69; --ink:#00ffff; --muted:#ff00ff;
+    --accent:#ff0080; --accent2:#00ff41; --glow:#ff0080;
   }
   
   *{box-sizing:border-box; margin:0; padding:0}
@@ -40,230 +66,889 @@
                linear-gradient(180deg,var(--bg),var(--bg2) 60%,#060912);
     font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
     overflow-x:hidden;
+    transition: background var(--morph-speed) ease;
   }
   
-  /* ═══════════════════════════════════════════════════════════════════
-     SECTION: Parallax Background System
-     ═══════════════════════════════════════════════════════════════════ */
-  #stars,#constellations{position:fixed; inset:0; z-index:-2; pointer-events:none}
+  /* ═════════════════════════════════════════════════════════════════
+     SECTION: Advanced Parallax & Particle System
+     PURPOSE: Multi-layer animated background with morphing effects
+     ═════════════════════════════════════════════════════════════════ */
+  #stars,#constellations,#particles,#mouseTrail,#connections{
+    position:fixed; inset:0; z-index:-2; pointer-events:none;
+  }
   #constellations{z-index:-1}
+  #particles{z-index:0; mix-blend-mode:screen}
+  #mouseTrail{z-index:1; mix-blend-mode:screen}
+  #connections{z-index:2; opacity:0.6}
   .parallax{transform:translateZ(0); will-change:transform}
   
-  /* ═══════════════════════════════════════════════════════════════════
-     SECTION: Header & Navigation
-     ═══════════════════════════════════════════════════════════════════ */
+  /* ═════════════════════════════════════════════════════════════════
+     SECTION: Enhanced Header with Theme Selector
+     ═════════════════════════════════════════════════════════════════ */
   header{
-    position:sticky; top:0; z-index:100; backdrop-filter:saturate(120%) blur(8px);
+    position:sticky; top:0; z-index:100; 
+    backdrop-filter:saturate(120%) blur(12px);
     background:linear-gradient(180deg,rgba(11,19,36,.95),rgba(11,19,36,.7));
-    border-bottom:1px solid #1b2c4d; box-shadow:0 4px 20px rgba(0,0,0,.3);
+    border-bottom:1px solid #1b2c4d; 
+    box-shadow:0 4px 20px rgba(0,0,0,.3), 0 0 60px var(--glow) inset;
+    transition: all var(--morph-speed) ease;
   }
   .wrap{max-width:1100px; margin:0 auto; padding:16px}
-  h1{margin:0 0 6px; font-size:22px; letter-spacing:.4px; color:var(--accent)}
+  h1{
+    margin:0 0 6px; font-size:22px; letter-spacing:.4px; color:var(--accent);
+    animation: titleGlow 3s ease-in-out infinite;
+  }
+  @keyframes titleGlow{
+    0%,100%{text-shadow:0 0 10px var(--glow),0 0 20px var(--glow)}
+    50%{text-shadow:0 0 20px var(--glow),0 0 40px var(--glow),0 0 60px var(--accent2)}
+  }
   .sub{color:var(--muted); font-size:13px; line-height:1.4}
   
-  /* ═══════════════════════════════════════════════════════════════════
-     SECTION: HUD & Gamification
-     ═══════════════════════════════════════════════════════════════════ */
-  .hud{display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-top:10px}
-  .chip{background:#0a152a; border:1px solid #203353; padding:8px 10px; border-radius:999px; display:flex; gap:8px; align-items:center; white-space:nowrap}
-  .xpbar{height:10px; width:220px; border-radius:999px; background:#0a152a; border:1px solid #1c2d4d; overflow:hidden}
-  .xpfill{height:100%; width:0%; background:linear-gradient(90deg,var(--accent),var(--accent2)); box-shadow:0 0 14px var(--glow) inset; transition:width .6s cubic-bezier(.4,0,.2,1)}
-  .badge{padding:3px 9px; border-radius:999px; font-size:11px; border:1px solid; opacity:.9; font-weight:500}
+  /* Theme Selector */
+  .theme-bar{
+    display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; align-items:center;
+  }
+  .theme-btn{
+    padding:6px 12px; border-radius:8px; border:1px solid #203353;
+    background:#0a152a; color:var(--ink); font-size:12px; cursor:pointer;
+    transition: all 0.3s ease;
+  }
+  .theme-btn:hover{
+    transform:translateY(-2px); box-shadow:0 4px 12px var(--glow);
+  }
+  .theme-btn.active{
+    background:var(--accent); color:#000; border-color:var(--accent);
+    box-shadow:0 0 20px var(--glow);
+  }
+  
+  /* ═════════════════════════════════════════════════════════════════
+     SECTION: Enhanced HUD with Animations
+     ═════════════════════════════════════════════════════════════════ */
+  .hud{
+    display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-top:10px;
+  }
+  .chip{
+    background:#0a152a; border:1px solid #203353; padding:8px 10px; 
+    border-radius:999px; display:flex; gap:8px; align-items:center; 
+    white-space:nowrap;
+    transition: all 0.3s ease;
+    animation: chipFloat 3s ease-in-out infinite;
+  }
+  .chip:hover{
+    transform:translateY(-3px) scale(1.05);
+    box-shadow:0 6px 20px var(--glow);
+  }
+  @keyframes chipFloat{
+    0%,100%{transform:translateY(0)}
+    50%{transform:translateY(-3px)}
+  }
+  .xpbar{
+    height:10px; width:220px; border-radius:999px; 
+    background:#0a152a; border:1px solid #1c2d4d; overflow:hidden;
+    position:relative;
+  }
+  .xpbar::after{
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);
+    animation:shimmer 2s infinite;
+  }
+  @keyframes shimmer{
+    0%{transform:translateX(-100%)}
+    100%{transform:translateX(100%)}
+  }
+  .xpfill{
+    height:100%; width:0%; 
+    background:linear-gradient(90deg,var(--accent),var(--accent2)); 
+    box-shadow:0 0 14px var(--glow) inset; 
+    transition:width var(--expand-speed) cubic-bezier(.4,0,.2,1);
+    position:relative;
+  }
+  .xpfill::after{
+    content:''; position:absolute; right:0; top:0; bottom:0;
+    width:20px; background:rgba(255,255,255,.5);
+    filter:blur(10px);
+  }
+  .badge{
+    padding:3px 9px; border-radius:999px; font-size:11px; 
+    border:1px solid; opacity:.9; font-weight:500;
+    animation: badgePulse var(--glow-pulse) ease-in-out infinite;
+  }
+  @keyframes badgePulse{
+    0%,100%{box-shadow:0 0 5px currentColor}
+    50%{box-shadow:0 0 15px currentColor, 0 0 25px currentColor}
+  }
   .b-sentinel{border-color:var(--sentinel); color:var(--sentinel); background:rgba(124,210,255,.05)}
   .b-peace{border-color:var(--peace); color:var(--peace); background:rgba(127,255,212,.05)}
   .b-corrupt{border-color:var(--corrupt); color:var(--corrupt); background:rgba(255,127,156,.05)}
   .b-dash{border-color:var(--dash); color:var(--dash); background:rgba(255,209,102,.05)}
   
-  /* ═══════════════════════════════════════════════════════════════════
-     SECTION: Controls & Inputs
-     ═══════════════════════════════════════════════════════════════════ */
+  /* ═════════════════════════════════════════════════════════════════
+     SECTION: Enhanced Controls with Export Buttons
+     ═════════════════════════════════════════════════════════════════ */
   .controls{display:flex; gap:10px; margin-top:10px; flex-wrap:wrap}
   input[type="search"],input[type="text"],textarea{
-    flex:1 1 320px; background:#0a152a; color:var(--ink); border:1px solid #1f304f; 
-    border-radius:10px; padding:10px 12px; outline:none; font-family:inherit; font-size:14px;
+    flex:1 1 320px; background:#0a152a; color:var(--ink); 
+    border:1px solid #1f304f; border-radius:10px; padding:10px 12px; 
+    outline:none; font-family:inherit; font-size:14px;
+    transition: all 0.3s ease;
   }
-  input:focus,textarea:focus{border-color:#2a4577; box-shadow:0 0 0 3px rgba(42,69,119,.2)}
+  input:focus,textarea:focus{
+    border-color:#2a4577; 
+    box-shadow:0 0 0 3px rgba(42,69,119,.2), 0 0 20px var(--glow);
+    transform:translateY(-1px);
+  }
   select,button{
-    background:#0a152a; color:var(--ink); border:1px solid #203353; border-radius:10px; 
-    padding:10px 12px; cursor:pointer; font-family:inherit; font-size:14px; transition:all .2s ease;
+    background:#0a152a; color:var(--ink); border:1px solid #203353; 
+    border-radius:10px; padding:10px 12px; cursor:pointer; 
+    font-family:inherit; font-size:14px; 
+    transition:all .3s ease;
+    position:relative; overflow:hidden;
   }
-  button:hover:not(:disabled),select:hover{border-color:#2a4577; background:#0d1a30}
-  button:active:not(:disabled){transform:translateY(1px)}
+  button::before{
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent);
+    transform:translateX(-100%);
+    transition:transform 0.6s;
+  }
+  button:hover::before{transform:translateX(100%)}
+  button:hover:not(:disabled),select:hover{
+    border-color:#2a4577; background:#0d1a30;
+    transform:translateY(-2px);
+    box-shadow:0 4px 12px var(--glow);
+  }
+  button:active:not(:disabled){transform:translateY(0) scale(0.98)}
   button:disabled{opacity:.5; cursor:not-allowed}
-  button.primary{background:var(--accent); border-color:var(--accent); color:#000; font-weight:600}
-  button.primary:hover:not(:disabled){background:#7ac2ff}
+  button.primary{
+    background:linear-gradient(135deg,var(--accent),var(--accent2)); 
+    border-color:var(--accent); color:#000; font-weight:600;
+  }
+  button.primary:hover:not(:disabled){
+    box-shadow:0 6px 24px var(--glow);
+  }
   button.danger{border-color:var(--danger); color:var(--danger)}
   button.danger:hover:not(:disabled){background:rgba(255,107,107,.1)}
   
-  /* ═══════════════════════════════════════════════════════════════════
-     SECTION: Main Content Grid
-     ═══════════════════════════════════════════════════════════════════ */
-  main{max-width:1200px; margin:18px auto 80px; padding:0 16px}
-  .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:14px}
+  .export-group{
+    display:flex; gap:6px; padding:6px; background:#0a152a; 
+    border-radius:10px; border:1px solid #203353;
+  }
+  .export-btn{
+    padding:8px 12px; font-size:13px; background:transparent;
+    border:none; color:var(--accent2);
+  }
   
-  /* ═══════════════════════════════════════════════════════════════════
-     SECTION: Directory Cards
-     ═══════════════════════════════════════════════════════════════════ */
+  /* ═════════════════════════════════════════════════════════════════
+     SECTION: Main Content with 3D Perspective & Smooth Transitions
+     PURPOSE: Enable true 3D card transformations with perspective
+     ═════════════════════════════════════════════════════════════════ */
+  main{
+    max-width:1200px; margin:18px auto 80px; padding:0 16px;
+    perspective:2000px; /* Creates 3D viewing context for cards */
+  }
+  .grid{
+    display:grid; 
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); 
+    gap:14px;
+    transform-style:preserve-3d; /* Enables 3D transformations for children */
+  }
+  
+  /* Cascade animation for cards appearing one by one */
+  .card{
+    animation:cardCascadeIn 0.6s ease backwards;
+  }
+  .card:nth-child(1){animation-delay:0.05s}
+  .card:nth-child(2){animation-delay:0.1s}
+  .card:nth-child(3){animation-delay:0.15s}
+  .card:nth-child(4){animation-delay:0.2s}
+  .card:nth-child(5){animation-delay:0.25s}
+  .card:nth-child(6){animation-delay:0.3s}
+  .card:nth-child(7){animation-delay:0.35s}
+  .card:nth-child(8){animation-delay:0.4s}
+  .card:nth-child(9){animation-delay:0.45s}
+  .card:nth-child(10){animation-delay:0.5s}
+  .card:nth-child(n+11){animation-delay:0.55s}
+  
+  @keyframes cardCascadeIn{
+    from{
+      opacity:0; 
+      transform:translateY(40px) translateZ(-100px) rotateX(-15deg);
+    }
+    to{
+      opacity:1; 
+      transform:translateY(0) translateZ(0) rotateX(0);
+    }
+  }
+  
+  /* ═════════════════════════════════════════════════════════════════
+     SECTION: Advanced Card System with Morphing Animations
+     PURPOSE: Expandable cards with particle effects and smooth transitions
+     FEATURES: Hover morphing, expansion animations, ripple effects
+     ═════════════════════════════════════════════════════════════════ */
   .card{
     background:linear-gradient(180deg,#0c1730,#0c1528);
-    border:1px solid #1a2a49; border-radius:16px; padding:14px; position:relative; overflow:hidden;
-    transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    border:1px solid #1a2a49; border-radius:16px; padding:14px; 
+    position:relative; overflow:hidden;
+    transition:all var(--morph-speed) cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin:center;
+    transform-style:preserve-3d;
+    cursor:pointer;
+    --rotateX:0deg;
+    --rotateY:0deg;
   }
-  .card:hover{transform:translateY(-2px); box-shadow:0 10px 30px rgba(80,160,255,.08); border-color:#2a4577}
-  .card.loading{opacity:.6; pointer-events:none}
-  .card.enhanced{border-color:#4ee0a1; box-shadow:0 0 0 1px rgba(78,224,161,.2) inset}
-  .title{font-weight:600; color:#eaf1ff; margin:2px 0 6px; word-break:break-word; font-size:16px}
-  .path{color:#9ab0cb; font-size:12px; font-family:Consolas,Monaco,monospace; margin-bottom:6px}
-  .description{color:#b8cce0; font-size:13px; line-height:1.5; margin:8px 0; display:none}
-  .card.enhanced .description{display:block}
-  .tags{margin-top:8px; display:flex; gap:6px; flex-wrap:wrap}
-  .cta{margin-top:12px; display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+  
+  /* Ripple Effect Container */
+  .card::after{
+    content:''; position:absolute; inset:0; border-radius:16px;
+    background:radial-gradient(circle at var(--x,50%) var(--y,50%),
+                rgba(101,179,255,.2) 0%,transparent 60%);
+    opacity:0; transition:opacity 0.6s;
+  }
+  .card:hover::after{opacity:1}
+  
+  /* 3D hover effect with tilt based on mouse position */
+  .card:hover{
+    transform:translateY(-12px) translateZ(40px) 
+              rotateX(var(--rotateX)) rotateY(var(--rotateY)) 
+              scale(1.03); 
+    box-shadow:0 30px 80px rgba(80,160,255,.25), 
+               0 0 40px var(--glow) inset,
+               0 40px 100px rgba(0,0,0,.4);
+    border-color:#2a4577;
+  }
+  
+  /* Flip animation for expanded cards */
+  .card.flip-enter{
+    animation:cardFlip 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  @keyframes cardFlip{
+    0%{transform:rotateY(0deg) scale(1)}
+    50%{transform:rotateY(180deg) scale(1.1)}
+    100%{transform:rotateY(360deg) scale(1)}
+  }
+  
+  /* Expanded State */
+  .card.expanded{
+    grid-column:1/-1;
+    transform:scale(1.02);
+    box-shadow:0 30px 80px rgba(80,160,255,.25);
+    z-index:10;
+  }
+  .card.expanded .description{
+    max-height:500px !important;
+    opacity:1 !important;
+  }
+  .card.expanded .full-content{
+    max-height:1000px;
+    opacity:1;
+  }
+  
+  .card.loading{
+    opacity:.6; pointer-events:none;
+    animation:loadingPulse 1.5s ease-in-out infinite;
+  }
+  @keyframes loadingPulse{
+    0%,100%{transform:scale(1)}
+    50%{transform:scale(1.02)}
+  }
+  
+  .card.enhanced{
+    border-color:#4ee0a1; 
+    box-shadow:0 0 0 1px rgba(78,224,161,.2) inset,
+               0 0 30px rgba(78,224,161,.1);
+    animation:enhancedGlow 2s ease-in-out infinite;
+  }
+  @keyframes enhancedGlow{
+    0%,100%{box-shadow:0 0 0 1px rgba(78,224,161,.2) inset, 0 0 20px rgba(78,224,161,.1)}
+    50%{box-shadow:0 0 0 2px rgba(78,224,161,.4) inset, 0 0 40px rgba(78,224,161,.2)}
+  }
+  
+  .title{
+    font-weight:600; color:#eaf1ff; margin:2px 0 6px; 
+    word-break:break-word; font-size:16px;
+    transition: all 0.3s ease;
+  }
+  .card:hover .title{
+    color:var(--accent2);
+    text-shadow:0 0 10px var(--glow);
+  }
+  
+  .path{
+    color:#9ab0cb; font-size:12px; 
+    font-family:Consolas,Monaco,monospace; margin-bottom:6px;
+    transition: color 0.3s ease;
+  }
+  .card:hover .path{color:var(--accent)}
+  
+  .description{
+    color:#b8cce0; font-size:13px; line-height:1.5; margin:8px 0; 
+    max-height:0; opacity:0; overflow:hidden;
+    transition:max-height var(--expand-speed) ease, 
+               opacity var(--expand-speed) ease;
+  }
+  .card.enhanced .description{max-height:200px; opacity:1}
+  
+  .full-content{
+    max-height:0; opacity:0; overflow:hidden;
+    transition:max-height var(--expand-speed) ease, 
+               opacity var(--expand-speed) ease;
+    margin-top:12px; padding-top:12px; border-top:1px solid #1a2a49;
+  }
+  
+  .tags{
+    margin-top:8px; display:flex; gap:6px; flex-wrap:wrap;
+  }
+  .cta{
+    margin-top:12px; display:flex; gap:8px; flex-wrap:wrap; 
+    align-items:center;
+  }
   .cta a,.cta button{
-    text-decoration:none; padding:8px 10px; border-radius:10px; border:1px solid #23406f; 
-    background:#0a152a; color:#dff2ff; font-size:13px; display:inline-flex; align-items:center; gap:4px;
+    text-decoration:none; padding:8px 10px; border-radius:10px; 
+    border:1px solid #23406f; background:#0a152a; color:#dff2ff; 
+    font-size:13px; display:inline-flex; align-items:center; gap:4px;
+    transition:all 0.3s ease;
   }
-  .cta a:hover,.cta button:hover{border-color:#3a63a4; background:#0d1a30}
-  .glow-ring{position:absolute; inset:auto -20% -60% -20%; height:140px; filter:blur(30px); background:radial-gradient(220px 40px at 50% 0,rgba(120,210,255,.18),transparent 60%)}
-  .special{border-color:#2a6fff; box-shadow:0 0 0 1px rgba(86,160,255,.25) inset}
+  .cta a:hover,.cta button:hover{
+    border-color:#3a63a4; background:#0d1a30;
+    transform:translateY(-2px);
+    box-shadow:0 4px 12px var(--glow);
+  }
+  
+  /* Holographic Glow Ring */
+  .glow-ring{
+    position:absolute; inset:auto -20% -60% -20%; height:140px; 
+    filter:blur(30px); 
+    background:radial-gradient(220px 40px at 50% 0,rgba(120,210,255,.18),transparent 60%);
+    animation:glowPulse var(--glow-pulse) ease-in-out infinite;
+  }
+  @keyframes glowPulse{
+    0%,100%{opacity:0.5; transform:translateY(0)}
+    50%{opacity:1; transform:translateY(-5px)}
+  }
+  
+  .special{
+    border-color:#2a6fff; 
+    box-shadow:0 0 0 1px rgba(86,160,255,.25) inset,
+               0 0 40px rgba(86,160,255,.15);
+  }
   .special .title{color:#a5d4ff}
   
-  /* ═══════════════════════════════════════════════════════════════════
-     SECTION: AI Assistant Panel - TOP RIGHT MINIATURE DESIGN
-     PURPOSE: Compact AI chatbot positioned in top-right corner
-     ═══════════════════════════════════════════════════════════════════ */
+  /* ═════════════════════════════════════════════════════════════════
+     SECTION: Data Visualization Dashboard
+     PURPOSE: Animated statistics and journey tracking
+     FEATURES: Charts, graphs, and exploration metrics
+     ═════════════════════════════════════════════════════════════════ */
+  .dashboard-toggle{
+    position:fixed; bottom:20px; right:20px; z-index:100;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    border:2px solid rgba(255,255,255,.2); border-radius:50%;
+    width:56px; height:56px; color:#000; font-size:24px;
+    cursor:pointer; box-shadow:0 6px 20px rgba(101,179,255,.5);
+    transition:all 0.3s ease; display:flex; align-items:center;
+    justify-content:center; animation:float 3s ease-in-out infinite;
+  }
+  .dashboard-toggle:hover{
+    transform:scale(1.15) translateY(-5px);
+    box-shadow:0 10px 30px rgba(101,179,255,.8);
+  }
+  
+  .dashboard-panel{
+    position:fixed; bottom:90px; right:20px; z-index:99;
+    width:400px; max-width:calc(100vw - 40px);
+    background:linear-gradient(180deg,#0f1d36,#0c1528);
+    border:1px solid #2a4577; border-radius:16px;
+    box-shadow:0 10px 40px rgba(0,0,0,.6), 0 0 60px var(--glow) inset;
+    transform:translateY(20px) scale(0.9); opacity:0;
+    pointer-events:none; transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    max-height:70vh; overflow-y:auto;
+  }
+  .dashboard-panel.open{
+    transform:translateY(0) scale(1); opacity:1; pointer-events:auto;
+  }
+  
+  .dashboard-header{
+    padding:16px; border-bottom:1px solid #1a2a49;
+    background:rgba(15,29,54,.8); display:flex;
+    justify-content:space-between; align-items:center;
+  }
+  .dashboard-header h3{
+    color:var(--accent2); font-size:16px; margin:0;
+    display:flex; align-items:center; gap:8px;
+  }
+  
+  .dashboard-content{padding:16px}
+  
+  .stat-card{
+    background:rgba(255,255,255,.02); border:1px solid #1a2a49;
+    border-radius:12px; padding:12px; margin-bottom:12px;
+    transition:all 0.3s ease;
+  }
+  .stat-card:hover{
+    border-color:#2a4577;
+    box-shadow:0 4px 20px rgba(80,160,255,.1);
+    transform:translateX(5px);
+  }
+  
+  .stat-label{
+    font-size:12px; color:var(--muted); text-transform:uppercase;
+    letter-spacing:0.5px; margin-bottom:6px;
+  }
+  .stat-value{
+    font-size:24px; font-weight:700; color:var(--accent2);
+    display:flex; align-items:baseline; gap:8px;
+  }
+  .stat-subvalue{
+    font-size:14px; color:var(--muted); font-weight:400;
+  }
+  
+  .progress-bar{
+    height:8px; background:#0a152a; border-radius:999px;
+    overflow:hidden; margin-top:8px; position:relative;
+  }
+  .progress-fill{
+    height:100%; background:linear-gradient(90deg,var(--accent),var(--accent2));
+    border-radius:999px; transition:width 0.6s ease;
+    box-shadow:0 0 10px var(--glow) inset;
+  }
+  
+  .mini-chart{
+    height:80px; margin-top:12px; position:relative;
+  }
+  .chart-bar{
+    position:absolute; bottom:0; width:8%;
+    background:linear-gradient(180deg,var(--accent2),var(--accent));
+    border-radius:4px 4px 0 0; transition:height 0.6s ease;
+    opacity:0.8;
+  }
+  .chart-bar:hover{opacity:1; filter:brightness(1.2)}
   .ai-mini-btn{
     position:fixed; top:16px; right:16px; z-index:1000; 
-    width:40px; height:40px; border-radius:50%;
+    width:46px; height:46px; border-radius:50%;
     background:linear-gradient(135deg,var(--accent),var(--accent2)); 
     border:2px solid rgba(255,255,255,.2); color:#000;
-    font-size:18px; cursor:pointer; box-shadow:0 4px 12px rgba(101,179,255,.4);
-    transition:transform .2s ease, box-shadow .2s ease; display:flex; align-items:center; justify-content:center;
+    font-size:20px; cursor:pointer; 
+    box-shadow:0 4px 12px rgba(101,179,255,.4);
+    transition:all 0.3s ease; 
+    display:flex; align-items:center; justify-content:center;
     padding:0; line-height:1;
+    animation:float 3s ease-in-out infinite;
   }
-  .ai-mini-btn:hover{transform:scale(1.05); box-shadow:0 6px 20px rgba(101,179,255,.6)}
-  .ai-mini-btn.pulse{animation:pulse 2s ease-in-out infinite}
-  @keyframes pulse{0%,100%{box-shadow:0 4px 12px rgba(101,179,255,.4)} 50%{box-shadow:0 6px 24px rgba(101,179,255,.8)}}
+  @keyframes float{
+    0%,100%{transform:translateY(0)}
+    50%{transform:translateY(-10px)}
+  }
+  .ai-mini-btn:hover{
+    transform:scale(1.15) translateY(-5px); 
+    box-shadow:0 8px 30px rgba(101,179,255,.8);
+  }
+  .ai-mini-btn.pulse{
+    animation:pulse 2s ease-in-out infinite, float 3s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{box-shadow:0 4px 12px rgba(101,179,255,.4)} 
+    50%{box-shadow:0 6px 24px rgba(101,179,255,.8), 0 0 40px var(--glow)}
+  }
   
   .ai-panel-mini{
-    position:fixed; top:66px; right:16px; z-index:999; width:320px; max-width:calc(100vw - 32px);
-    background:linear-gradient(180deg,#0f1d36,#0c1528); border:1px solid #2a4577; border-radius:12px;
-    box-shadow:0 8px 24px rgba(0,0,0,.5); transform:translateY(-10px); opacity:0; 
-    pointer-events:none; transition:opacity .2s ease, transform .2s ease;
+    position:fixed; top:72px; right:16px; z-index:999; 
+    width:360px; max-width:calc(100vw - 32px);
+    background:linear-gradient(180deg,#0f1d36,#0c1528); 
+    border:1px solid #2a4577; border-radius:12px;
+    box-shadow:0 8px 24px rgba(0,0,0,.5), 0 0 40px var(--glow) inset; 
+    transform:translateY(-10px) scale(0.95); opacity:0; 
+    pointer-events:none; 
+    transition:opacity 0.3s ease, transform 0.3s ease;
   }
-  .ai-panel-mini.open{transform:translateY(0); opacity:1; pointer-events:auto}
+  .ai-panel-mini.open{
+    transform:translateY(0) scale(1); opacity:1; pointer-events:auto;
+  }
   
   .ai-header-mini{
-    padding:10px 12px; border-bottom:1px solid #1a2a49; display:flex; justify-content:space-between; align-items:center;
+    padding:10px 12px; border-bottom:1px solid #1a2a49; 
+    display:flex; justify-content:space-between; align-items:center;
     background:rgba(15,29,54,.6);
   }
-  .ai-header-mini h3{font-size:13px; color:var(--accent2); display:flex; align-items:center; gap:6px; font-weight:600}
-  .ai-close-mini{background:transparent; border:none; color:var(--muted); font-size:18px; padding:0; width:20px; height:20px; cursor:pointer}
-  .ai-close-mini:hover{color:var(--ink)}
+  .ai-header-mini h3{
+    font-size:13px; color:var(--accent2); display:flex; 
+    align-items:center; gap:6px; font-weight:600;
+  }
+  .ai-close-mini{
+    background:transparent; border:none; color:var(--muted); 
+    font-size:18px; padding:0; width:20px; height:20px; cursor:pointer;
+    transition:all 0.3s ease;
+  }
+  .ai-close-mini:hover{
+    color:var(--ink); transform:rotate(90deg);
+  }
   
-  .ai-body-mini{padding:12px; max-height:280px; overflow-y:auto; font-size:13px}
+  .ai-body-mini{
+    padding:12px; max-height:320px; overflow-y:auto; font-size:13px;
+  }
   .ai-body-mini::-webkit-scrollbar{width:6px}
   .ai-body-mini::-webkit-scrollbar-track{background:rgba(255,255,255,.02)}
-  .ai-body-mini::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1); border-radius:3px}
+  .ai-body-mini::-webkit-scrollbar-thumb{
+    background:rgba(255,255,255,.1); border-radius:3px;
+  }
   
-  .ai-msg{margin-bottom:10px; padding:8px 10px; border-radius:8px; line-height:1.4; font-size:12px}
-  .ai-msg.user{background:#1a2a49; color:var(--ink); margin-left:16px}
-  .ai-msg.assistant{background:rgba(78,224,161,.08); color:#e0f2f1; margin-right:16px; border-left:2px solid var(--accent2)}
-  .ai-msg.system{background:rgba(255,184,77,.08); color:#ffd699; font-style:italic; text-align:center; font-size:11px; padding:6px 8px}
+  .ai-msg{
+    margin-bottom:10px; padding:8px 10px; border-radius:8px; 
+    line-height:1.4; font-size:12px;
+    animation:msgSlideIn 0.3s ease;
+  }
+  @keyframes msgSlideIn{
+    from{opacity:0; transform:translateX(-20px)}
+    to{opacity:1; transform:translateX(0)}
+  }
+  .ai-msg.user{
+    background:#1a2a49; color:var(--ink); margin-left:16px;
+  }
+  .ai-msg.assistant{
+    background:rgba(78,224,161,.08); color:#e0f2f1; 
+    margin-right:16px; border-left:2px solid var(--accent2);
+  }
+  .ai-msg.system{
+    background:rgba(255,184,77,.08); color:#ffd699; 
+    font-style:italic; text-align:center; font-size:11px; 
+    padding:6px 8px;
+  }
   
-  .ai-input-mini{padding:10px 12px; border-top:1px solid #1a2a49; display:flex; gap:6px; background:rgba(15,29,54,.4)}
+  .ai-input-mini{
+    padding:10px 12px; border-top:1px solid #1a2a49; 
+    display:flex; gap:6px; background:rgba(15,29,54,.4);
+  }
   .ai-input-mini input{
-    flex:1; min-width:0; background:#0a152a; color:var(--ink); border:1px solid #1f304f;
-    border-radius:8px; padding:7px 10px; outline:none; font-size:12px;
+    flex:1; min-width:0; background:#0a152a; color:var(--ink); 
+    border:1px solid #1f304f; border-radius:8px; padding:7px 10px; 
+    outline:none; font-size:12px;
+    transition:all 0.3s ease;
   }
-  .ai-input-mini input:focus{border-color:#2a4577}
+  .ai-input-mini input:focus{
+    border-color:#2a4577;
+    box-shadow:0 0 10px var(--glow);
+  }
   .ai-input-mini button{
-    background:var(--accent2); border:none; color:#000; border-radius:8px; padding:7px 12px;
+    background:var(--accent2); border:none; color:#000; 
+    border-radius:8px; padding:7px 12px;
     font-size:12px; font-weight:600; cursor:pointer;
+    transition:all 0.3s ease;
   }
-  .ai-input-mini button:hover{background:#5ff0b1}
+  .ai-input-mini button:hover{
+    background:#5ff0b1;
+    box-shadow:0 4px 12px var(--glow);
+    transform:translateY(-2px);
+  }
   
-  /* ═══════════════════════════════════════════════════════════════════
-     SECTION: Animated Spaceships
-     ═══════════════════════════════════════════════════════════════════ */
+  /* ═════════════════════════════════════════════════════════════════
+     SECTION: Animated Spaceships with Enhanced Paths
+     ═════════════════════════════════════════════════════════════════ */
   .ship{
-    position:fixed; width:30px; height:30px; pointer-events:none; opacity:.8; z-index:0; 
-    filter:drop-shadow(0 0 6px rgba(130,200,255,.6))
+    position:fixed; width:30px; height:30px; pointer-events:none; 
+    opacity:.8; z-index:0; 
+    filter:drop-shadow(0 0 6px rgba(130,200,255,.6));
+    animation-timing-function:linear;
   }
-  @keyframes patrolX{0%{transform:translateX(-10vw)} 100%{transform:translateX(110vw)}}
-  @keyframes patrolY{0%{transform:translateY(0)} 50%{transform:translateY(8px)} 100%{transform:translateY(0)}}
-  .ship path{stroke:#a7ddff; fill:none; stroke-width:1.2}
-  .ship:nth-child(1){top:12vh; left:-10vw; animation:patrolX 42s linear infinite, patrolY 6s ease-in-out infinite}
-  .ship:nth-child(2){top:32vh; left:-15vw; animation:patrolX 60s linear infinite reverse, patrolY 8s ease-in-out infinite}
-  .ship:nth-child(3){top:68vh; left:-20vw; animation:patrolX 55s linear infinite, patrolY 7s ease-in-out infinite}
+  @keyframes patrolX{
+    0%{transform:translateX(-10vw) rotate(0deg)}
+    100%{transform:translateX(110vw) rotate(360deg)}
+  }
+  @keyframes patrolY{
+    0%{transform:translateY(0)}
+    50%{transform:translateY(12px)}
+    100%{transform:translateY(0)}
+  }
+  .ship path{
+    stroke:#a7ddff; fill:none; stroke-width:1.2;
+    animation:shipGlow 2s ease-in-out infinite;
+  }
+  @keyframes shipGlow{
+    0%,100%{stroke:#a7ddff}
+    50%{stroke:var(--accent2)}
+  }
+  .ship:nth-child(1){
+    top:12vh; left:-10vw; 
+    animation:patrolX 42s infinite, patrolY 6s ease-in-out infinite;
+  }
+  .ship:nth-child(2){
+    top:32vh; left:-15vw; 
+    animation:patrolX 60s reverse infinite, patrolY 8s ease-in-out infinite;
+  }
+  .ship:nth-child(3){
+    top:68vh; left:-20vw; 
+    animation:patrolX 55s infinite, patrolY 7s ease-in-out infinite;
+  }
   
-  /* ═══════════════════════════════════════════════════════════════════
-     SECTION: Collapsible Categories
-     ═══════════════════════════════════════════════════════════════════ */
-  details.category{background:linear-gradient(180deg,#0b152c,#0b1426); border:1px solid #1a2a49; border-radius:16px; padding:12px 14px; margin:14px 0}
-  details>summary{cursor:pointer; list-style:none; user-select:none; font-weight:600; color:#bdddff; display:flex; align-items:center; gap:8px}
+  /* ═════════════════════════════════════════════════════════════════
+     SECTION: Collapsible Categories with Smooth Transitions
+     ═════════════════════════════════════════════════════════════════ */
+  details.category{
+    background:linear-gradient(180deg,#0b152c,#0b1426); 
+    border:1px solid #1a2a49; border-radius:16px; 
+    padding:12px 14px; margin:14px 0;
+    transition:all var(--morph-speed) ease;
+  }
+  details.category:hover{
+    border-color:#2a4577;
+    box-shadow:0 4px 20px rgba(80,160,255,.1);
+  }
+  details>summary{
+    cursor:pointer; list-style:none; user-select:none; 
+    font-weight:600; color:#bdddff; display:flex; 
+    align-items:center; gap:8px;
+    transition:color 0.3s ease;
+  }
+  details>summary:hover{color:var(--accent2)}
   details>summary::-webkit-details-marker{display:none}
-  details>summary::before{content:'▶'; transition:transform .2s; display:inline-block; width:16px}
+  details>summary::before{
+    content:'▶'; 
+    transition:transform var(--expand-speed); 
+    display:inline-block; width:16px;
+  }
   details[open]>summary::before{transform:rotate(90deg)}
-  details[open]{border-color:#2a4577}
+  details[open]{
+    border-color:#2a4577;
+    box-shadow:0 0 30px var(--glow) inset;
+  }
   details .grid{margin-top:12px}
   
-  /* ═══════════════════════════════════════════════════════════════════
-     SECTION: Toast Notifications
-     ═══════════════════════════════════════════════════════════════════ */
-  .toast-container{position:fixed; top:80px; right:20px; z-index:300; display:flex; flex-direction:column; gap:10px; max-width:calc(100vw - 40px)}
+  /* ═════════════════════════════════════════════════════════════════
+     SECTION: Enhanced Toast Notifications
+     ═════════════════════════════════════════════════════════════════ */
+  .toast-container{
+    position:fixed; top:80px; right:20px; z-index:300; 
+    display:flex; flex-direction:column; gap:10px; 
+    max-width:calc(100vw - 40px);
+  }
   .toast{
-    background:#0f1d36; border:1px solid #2a4577; border-radius:12px; padding:12px 16px;
-    box-shadow:0 8px 20px rgba(0,0,0,.4); min-width:280px; animation:slideIn .3s ease;
+    background:#0f1d36; border:1px solid #2a4577; border-radius:12px; 
+    padding:12px 16px;
+    box-shadow:0 8px 20px rgba(0,0,0,.4), 0 0 20px var(--glow) inset; 
+    min-width:280px; animation:toastSlideIn .4s ease;
     display:flex; align-items:center; gap:10px; color:var(--ink);
   }
-  .toast.success{border-color:var(--success); background:rgba(74,222,128,.08)}
-  .toast.error{border-color:var(--danger); background:rgba(255,107,107,.08)}
-  .toast.info{border-color:var(--info); background:rgba(96,165,250,.08)}
-  @keyframes slideIn{from{transform:translateX(400px); opacity:0} to{transform:translateX(0); opacity:1}}
+  .toast.success{
+    border-color:var(--success); background:rgba(74,222,128,.08);
+  }
+  .toast.error{
+    border-color:var(--danger); background:rgba(255,107,107,.08);
+  }
+  .toast.info{
+    border-color:var(--info); background:rgba(96,165,250,.08);
+  }
+  @keyframes toastSlideIn{
+    from{transform:translateX(400px) scale(0.8); opacity:0} 
+    to{transform:translateX(0) scale(1); opacity:1}
+  }
   
-  /* ═══════════════════════════════════════════════════════════════════
-     SECTION: Footer
-     ═══════════════════════════════════════════════════════════════════ */
-  footer{color:#8aa6cc; text-align:center; padding:30px 16px; font-size:13px; line-height:1.6}
-  .zero-harm{background:rgba(255,255,255,.02); border:1px solid #1a2a49; border-radius:12px; padding:16px; max-width:800px; margin:20px auto; text-align:left}
-  .zero-harm h3{margin:0 0 8px; color:var(--accent2); font-size:15px}
+  /* ═════════════════════════════════════════════════════════════════
+     SECTION: Footer with Enhanced Styling
+     ═════════════════════════════════════════════════════════════════ */
+  footer{
+    color:#8aa6cc; text-align:center; padding:30px 16px; 
+    font-size:13px; line-height:1.6;
+  }
+  .zero-harm{
+    background:rgba(255,255,255,.02); border:1px solid #1a2a49; 
+    border-radius:12px; padding:16px; max-width:800px; 
+    margin:20px auto; text-align:left;
+    transition:all 0.3s ease;
+  }
+  .zero-harm:hover{
+    border-color:#2a4577;
+    box-shadow:0 4px 20px rgba(80,160,255,.1);
+  }
+  .zero-harm h3{
+    margin:0 0 8px; color:var(--accent2); font-size:15px;
+  }
   .zero-harm ul{margin:10px 0; padding-left:20px}
   .zero-harm li{margin:4px 0}
   
-  /* ═══════════════════════════════════════════════════════════════════
+  /* ═════════════════════════════════════════════════════════════════
      SECTION: Utility Classes
-     ═══════════════════════════════════════════════════════════════════ */
+     ═════════════════════════════════════════════════════════════════ */
   .hide{display:none !important}
   .spinner{
-    display:inline-block; width:14px; height:14px; border:2px solid rgba(255,255,255,.2);
-    border-top-color:var(--accent2); border-radius:50%; animation:spin .6s linear infinite;
+    display:inline-block; width:14px; height:14px; 
+    border:2px solid rgba(255,255,255,.2);
+    border-top-color:var(--accent2); border-radius:50%; 
+    animation:spin .6s linear infinite;
   }
   @keyframes spin{to{transform:rotate(360deg)}}
   
-  noscript{display:block; padding:20px; background:var(--warn); color:#000; text-align:center; font-weight:600}
+  /* Print Stylesheet */
+  @media print{
+    header,footer,.ship,.ai-mini-btn,.ai-panel-mini,.toast-container{display:none}
+    body{background:white; color:black}
+    .card{page-break-inside:avoid; border:1px solid #ccc}
+  }
+  
+  noscript{
+    display:block; padding:20px; background:var(--warn); 
+    color:#000; text-align:center; font-weight:600;
+  }
   
   @media(max-width:768px){
     .ai-panel-mini{width:calc(100vw - 32px); max-height:60vh}
     .grid{grid-template-columns:1fr}
     .hud{font-size:13px}
     .xpbar{width:160px}
-    .ai-mini-btn{width:36px; height:36px; font-size:16px}
+    .ai-mini-btn{width:40px; height:40px; font-size:18px}
+    h1{font-size:18px}
+    .theme-bar{font-size:11px}
+    .dashboard-panel{width:calc(100vw - 32px)}
   }
+  
+  /* ═════════════════════════════════════════════════════════════════
+     SECTION: Tutorial Overlay System
+     PURPOSE: Interactive guided tour for new users
+     ═════════════════════════════════════════════════════════════════ */
+  .tutorial-overlay{
+    position:fixed; inset:0; background:rgba(0,0,0,0.85);
+    z-index:9999; display:flex; align-items:center; justify-content:center;
+    opacity:0; pointer-events:none;
+    transition:opacity 0.4s ease;
+  }
+  .tutorial-overlay.active{opacity:1; pointer-events:auto}
+  
+  .tutorial-spotlight{
+    position:fixed; border:3px solid var(--accent2);
+    border-radius:16px; pointer-events:none;
+    box-shadow:0 0 0 9999px rgba(0,0,0,0.85), 0 0 40px var(--accent2);
+    transition:all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index:10000;
+  }
+  
+  .tutorial-tooltip{
+    position:fixed; max-width:350px;
+    background:linear-gradient(180deg,#0f1d36,#0c1528);
+    border:2px solid var(--accent2); border-radius:16px;
+    padding:20px; z-index:10001;
+    box-shadow:0 20px 60px rgba(0,0,0,0.8), 0 0 40px var(--accent2) inset;
+    transform:scale(0.9); opacity:0;
+    transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .tutorial-tooltip.active{transform:scale(1); opacity:1}
+  
+  .tutorial-tooltip h3{
+    margin:0 0 12px; color:var(--accent2); font-size:18px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .tutorial-tooltip p{
+    margin:0 0 16px; color:var(--ink); line-height:1.6;
+  }
+  .tutorial-controls{
+    display:flex; gap:10px; justify-content:space-between;
+  }
+  .tutorial-progress{
+    font-size:12px; color:var(--muted); align-self:center;
+  }
+  .tutorial-btn{
+    padding:8px 16px; border-radius:8px; border:1px solid var(--accent);
+    background:var(--accent); color:#000; font-weight:600;
+    cursor:pointer; transition:all 0.3s ease;
+  }
+  .tutorial-btn:hover{
+    transform:translateY(-2px); box-shadow:0 4px 12px var(--glow);
+  }
+  .tutorial-btn.secondary{
+    background:transparent; border-color:#2a4577; color:var(--ink);
+  }
+  
+  /* ═════════════════════════════════════════════════════════════════
+     SECTION: Achievement Notification System
+     ═════════════════════════════════════════════════════════════════ */
+  .achievement-container{
+    position:fixed; top:20px; left:50%; transform:translateX(-50%);
+    z-index:1000; display:flex; flex-direction:column; gap:12px;
+    max-width:400px; pointer-events:none;
+  }
+  
+  .achievement{
+    background:linear-gradient(135deg,#1a2a49,#0f1d36);
+    border:2px solid var(--accent2); border-radius:16px;
+    padding:16px 20px; box-shadow:0 10px 40px rgba(0,0,0,0.6), 
+                                   0 0 40px var(--accent2) inset;
+    display:flex; align-items:center; gap:16px;
+    animation:achievementSlideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    position:relative; overflow:hidden;
+  }
+  
+  @keyframes achievementSlideIn{
+    from{transform:translateY(-100px) scale(0.8); opacity:0}
+    to{transform:translateY(0) scale(1); opacity:1}
+  }
+  
+  .achievement::before{
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(90deg,transparent,rgba(78,224,161,0.2),transparent);
+    animation:achievementShimmer 2s infinite;
+  }
+  @keyframes achievementShimmer{
+    0%{transform:translateX(-100%)}
+    100%{transform:translateX(100%)}
+  }
+  
+  .achievement-icon{
+    font-size:48px; filter:drop-shadow(0 4px 12px var(--accent2));
+    animation:achievementBounce 0.8s ease;
+  }
+  @keyframes achievementBounce{
+    0%,100%{transform:scale(1)}
+    50%{transform:scale(1.2) rotate(10deg)}
+  }
+  
+  .achievement-content h4{
+    margin:0 0 4px; color:var(--accent2); font-size:16px;
+  }
+  .achievement-content p{
+    margin:0 0 6px; color:var(--ink); font-size:13px; line-height:1.4;
+  }
+  .achievement-xp{
+    font-size:12px; color:var(--warn); font-weight:600;
+  }
+  
+  /* ═════════════════════════════════════════════════════════════════
+     SECTION: Level Up Celebration Effect
+     ═════════════════════════════════════════════════════════════════ */
+  .levelup-explosion{
+    position:fixed; inset:0; pointer-events:none; z-index:9998;
+  }
+  
+  .sound-toggle{
+    position:fixed; top:70px; right:20px; z-index:99;
+    background:rgba(15,29,54,0.9); border:1px solid #2a4577;
+    border-radius:8px; padding:8px 12px; font-size:20px;
+    cursor:pointer; transition:all 0.3s ease;
+  }
+  .sound-toggle:hover{
+    transform:translateY(-2px); box-shadow:0 4px 12px var(--glow);
+  }
+  .sound-toggle.muted{opacity:0.5}
 </style>
 </head>
-<body>
+<body data-theme="space">
 
 <canvas id="stars" class="parallax"></canvas>
 <canvas id="constellations" class="parallax"></canvas>
+<canvas id="particles" class="parallax"></canvas>
+<canvas id="mouseTrail" class="parallax"></canvas>
+<canvas id="connections" class="parallax"></canvas>
 
 <header>
   <div class="wrap">
-    <h1>Galactic Directory — <span style="color:var(--accent2)">Sentinel Edition</span></h1>
-    <div class="sub">AI-enhanced exploration platform. Earn XP, unlock badges, and let the AI assistant continuously improve directory metadata.</div>
+    <h1>Galactic Directory — <span style="color:var(--accent2)">Sentinel Edition Enhanced</span></h1>
+    <div class="sub">AI-enhanced exploration platform with morphing animations, particle effects, and multi-theme support. Earn XP, unlock badges, and explore with style.</div>
+    
+    <!-- Theme Selector -->
+    <div class="theme-bar">
+      <span style="color:var(--muted); font-size:12px">🎨 Theme:</span>
+      <button class="theme-btn active" data-theme="space">🌌 Space</button>
+      <button class="theme-btn" data-theme="medieval">⚔️ Medieval</button>
+      <button class="theme-btn" data-theme="anime">✨ Anime</button>
+      <button class="theme-btn" data-theme="cyberpunk">🔮 Cyberpunk</button>
+    </div>
     
     <div class="hud">
-      <div class="chip">Level <strong id="lvl">1</strong></div>
-      <div class="chip" style="gap:10px">
+      <div class="chip" title="Your current level">Level <strong id="lvl">1</strong></div>
+      <div class="chip" style="gap:10px" title="Experience points to next level">
         <div class="xpbar"><div id="xpfill" class="xpfill"></div></div>
         <span><span id="xp">0</span> / <span id="xpcap">100</span> XP</span>
       </div>
@@ -294,9 +979,14 @@
         <option value="Funding">Funding</option>
         <option value="Misc">Misc</option>
       </select>
-      <button id="favoritesBtn">★ Favorites</button>
-      <button id="enhancedBtn">✨ Enhanced Only</button>
+      <button id="favoritesBtn" title="Show only favorites">★ Favorites</button>
+      <button id="enhancedBtn" title="Show only AI-enhanced directories">✨ Enhanced Only</button>
       <button id="aiEnhanceBtn" class="primary" title="Let AI analyze and enhance all directories">🤖 AI Enhance All</button>
+      <div class="export-group" title="Export your directory data">
+        <button class="export-btn" id="exportHTML">💾 HTML</button>
+        <button class="export-btn" id="exportJSON">📄 JSON</button>
+        <button class="export-btn" id="exportPDF">🖨️ PDF</button>
+      </div>
       <button id="resetProg" class="danger">Reset Progress</button>
     </div>
   </div>
@@ -333,6 +1023,7 @@
   <div class="zero-harm">
     <h3>📚 Technical Architecture</h3>
     <p><strong>Technology Stack:</strong> Pure vanilla JavaScript (no React, no frameworks). Standalone HTML file.</p>
+    <p><strong>Animation System:</strong> CSS3 transforms, Canvas API, morphing transitions, particle effects.</p>
     <p><strong>IndexedDB Schema:</strong> Versioned (v2), automatic migrations, error recovery.</p>
     <p><strong>AI System:</strong> Context-aware enhancement using Claude API, batch processing, usage tracking.</p>
     <p><strong>Security:</strong> Input sanitization, rate limiting, CSP-ready, XSS protection.</p>
@@ -346,6 +1037,8 @@
       <li>IndexedDB wrapper patterns inspired by Jake Archibald's IDB library concepts</li>
       <li>Gamification mechanics adapted from open-source RPG UI frameworks</li>
       <li>AI integration patterns following Anthropic Claude API best practices</li>
+      <li>Particle system concepts from web animation libraries</li>
+      <li>Theme switching patterns from modern CSS frameworks</li>
     </ul>
     <p>All code substantially rewritten and documented for this specific peaceful use case.</p>
   </div>
@@ -355,7 +1048,7 @@
 <svg class="ship" viewBox="0 0 24 24" aria-hidden="true"><path d="M1 8h7l2-2 2 4 5-2h6"/></svg>
 <svg class="ship" viewBox="0 0 24 24" aria-hidden="true"><path d="M0 16h9l2-4 2 5 6-1h5"/></svg>
 
-<!-- AI Assistant - Top Right Miniature -->
+<!-- AI Assistant - Top Right -->
 <button class="ai-mini-btn pulse" id="aiMiniBtn" aria-label="Open AI Assistant" title="AI Assistant">🤖</button>
 
 <div class="ai-panel-mini" id="aiPanelMini">
@@ -374,6 +1067,72 @@
 
 <div class="toast-container" id="toastContainer"></div>
 
+<!-- Achievement Notification Container -->
+<div class="achievement-container" id="achievementContainer"></div>
+
+<!-- Tutorial Overlay System -->
+<div class="tutorial-overlay" id="tutorialOverlay">
+  <div class="tutorial-spotlight" id="tutorialSpotlight"></div>
+  <div class="tutorial-tooltip" id="tutorialTooltip">
+    <h3 id="tutorialTitle"></h3>
+    <p id="tutorialText"></p>
+    <div class="tutorial-controls">
+      <span class="tutorial-progress" id="tutorialProgress"></span>
+      <div style="display:flex; gap:10px">
+        <button class="tutorial-btn secondary" id="tutorialSkip">Skip Tour</button>
+        <button class="tutorial-btn" id="tutorialNext">Next</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Level Up Celebration Canvas -->
+<canvas id="levelupExplosion" class="levelup-explosion"></canvas>
+
+<!-- Sound Toggle -->
+<button class="sound-toggle" id="soundToggle" title="Toggle Sound">🔊</button>
+
+<!-- Data Visualization Dashboard -->
+<button class="dashboard-toggle" id="dashboardToggle" aria-label="Open Dashboard" title="View Your Journey">📊</button>
+
+<div class="dashboard-panel" id="dashboardPanel">
+  <div class="dashboard-header">
+    <h3><span>📊</span> Your Exploration Journey</h3>
+    <button class="ai-close-mini" id="dashboardClose" aria-label="Close">×</button>
+  </div>
+  <div class="dashboard-content" id="dashboardContent">
+    <div class="stat-card">
+      <div class="stat-label">Total Visits</div>
+      <div class="stat-value">
+        <span id="totalVisits">0</span>
+        <span class="stat-subvalue">explorations</span>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-label">Directories Enhanced</div>
+      <div class="stat-value">
+        <span id="enhancedCount">0</span>
+        <span class="stat-subvalue">/ <span id="totalDirs">0</span></span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="enhancementProgress"></div>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-label">Favorite Categories</div>
+      <div id="favCategories" style="margin-top:8px; display:flex; flex-wrap:wrap; gap:6px">
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-label">Activity This Week</div>
+      <div class="mini-chart" id="activityChart"></div>
+    </div>
+  </div>
+</div>
+
 <noscript>
   <p>⚠️ This application requires JavaScript to function. Please enable JavaScript in your browser settings.</p>
 </noscript>
@@ -381,16 +1140,16 @@
 <script>
 "use strict";
 
-/* ═══════════════════════════════════════════════════════════════════
+/* ═════════════════════════════════════════════════════════════════
    SECTION: Pure Vanilla JavaScript - No React Dependencies
-   PURPOSE: This is a standalone HTML file using only native browser APIs
+   PURPOSE: Standalone HTML file using only native browser APIs
    TECHNOLOGY: IndexedDB, Fetch API, Canvas API, DOM manipulation
-   AI INTEGRATION: Direct Claude API calls via fetch() - no frameworks
-   ═══════════════════════════════════════════════════════════════════ */
+   FEATURES: Advanced animations, particle systems, theme switching
+   ═════════════════════════════════════════════════════════════════ */
 
-/* ═══════════════════════════════════════════════════════════════════
+/* ═════════════════════════════════════════════════════════════════
    SECTION: Core Configuration
-   ═══════════════════════════════════════════════════════════════════ */
+   ═════════════════════════════════════════════════════════════════ */
 var CONFIG = {
   DB_NAME: 'GalacticDirectoryDB',
   DB_VERSION: 2,
@@ -413,12 +1172,60 @@ var CONFIG = {
     RATE_LIMIT_MS: 2000,
     BATCH_SIZE: 5,
     MAX_RETRIES: 3
-  }
+  },
+  ANIMATION: {
+    PARTICLE_COUNT: 50,
+    RIPPLE_DURATION: 1000
+  },
+  SOUND: {
+    ENABLED: true,
+    VOLUME: 0.15,
+    MASTER_VOLUME: 0.3
+  },
+  TUTORIAL: {
+    SHOWN_KEY: 'tutorial-shown',
+    STEPS: [
+      {
+        target: '.card',
+        title: '🎴 Interactive Cards',
+        text: 'Hover over cards to see 3D tilt effects. Click titles to expand. Double-click for flip animation!',
+        position: 'bottom'
+      },
+      {
+        target: '#aiEnhanceBtn',
+        title: '🤖 AI Enhancement',
+        text: 'Let the AI analyze directories and generate rich metadata descriptions automatically.',
+        position: 'bottom'
+      },
+      {
+        target: '#dashboardToggle',
+        title: '📊 Your Journey Dashboard',
+        text: 'Track your exploration statistics, activity patterns, and favorite categories here.',
+        position: 'left'
+      },
+      {
+        target: '.theme-btn',
+        title: '🎨 Theme Switching',
+        text: 'Switch between Space, Medieval, Anime, and Cyberpunk themes instantly.',
+        position: 'bottom'
+      }
+    ]
+  },
+  ACHIEVEMENTS: [
+    { id: 'first_visit', name: 'First Steps', desc: 'Visit your first directory', xp: 10, icon: '🚀' },
+    { id: 'five_visits', name: 'Explorer', desc: 'Visit 5 directories', xp: 25, icon: '🔍' },
+    { id: 'ten_visits', name: 'Pathfinder', desc: 'Visit 10 directories', xp: 50, icon: '🧭' },
+    { id: 'first_enhance', name: 'AI Pioneer', desc: 'Enhance your first directory with AI', xp: 30, icon: '✨' },
+    { id: 'five_enhance', name: 'Data Curator', desc: 'Enhance 5 directories', xp: 75, icon: '📚' },
+    { id: 'level_five', name: 'Sentinel Rank', desc: 'Reach level 5', xp: 100, icon: '⭐' },
+    { id: 'all_themes', name: 'Style Master', desc: 'Try all four themes', xp: 20, icon: '🎨' },
+    { id: 'dashboard_opened', name: 'Data Aware', desc: 'Open the analytics dashboard', xp: 15, icon: '📊' }
+  ]
 };
 
-/* ═══════════════════════════════════════════════════════════════════
+/* ═════════════════════════════════════════════════════════════════
    SECTION: Error Handling System
-   ═══════════════════════════════════════════════════════════════════ */
+   ═════════════════════════════════════════════════════════════════ */
 var ErrorHandler = {
   handle: function(error, context) {
     context = context || 'Unknown';
@@ -460,9 +1267,9 @@ var ErrorHandler = {
   }
 };
 
-/* ═══════════════════════════════════════════════════════════════════
-   SECTION: Toast Notification System
-   ═══════════════════════════════════════════════════════════════════ */
+/* ═════════════════════════════════════════════════════════════════
+   SECTION: Toast Notification System with Animations
+   ═════════════════════════════════════════════════════════════════ */
 var Toast = {
   show: function(message, type, duration) {
     type = type || 'info';
@@ -474,13 +1281,14 @@ var Toast = {
     var toast = document.createElement('div');
     toast.className = 'toast ' + type;
     
-    var icon = type === 'success' ? '✓' : type === 'error' ? '⚠' : 'ℹ';
+    var icon = type === 'success' ? '✔' : type === 'error' ? '⚠' : 'ℹ';
     toast.innerHTML = '<span style="font-size:18px">' + icon + '</span><span>' + message + '</span>';
     
     container.appendChild(toast);
     
     setTimeout(function() {
       toast.style.opacity = '0';
+      toast.style.transform = 'translateX(400px) scale(0.8)';
       setTimeout(function() {
         if (toast.parentNode) {
           toast.parentNode.removeChild(toast);
@@ -490,9 +1298,9 @@ var Toast = {
   }
 };
 
-/* ═══════════════════════════════════════════════════════════════════
-   SECTION: IndexedDB Wrapper (Pure Promises - No React)
-   ═══════════════════════════════════════════════════════════════════ */
+/* ═════════════════════════════════════════════════════════════════
+   SECTION: IndexedDB Wrapper (Pure Promises)
+   ═════════════════════════════════════════════════════════════════ */
 var DB = {
   db: null,
   
@@ -592,23 +1400,48 @@ var DB = {
   }
 };
 
-/* ═══════════════════════════════════════════════════════════════════
-   SECTION: Background Animation System
-   ═══════════════════════════════════════════════════════════════════ */
+/* ═════════════════════════════════════════════════════════════════
+   SECTION: Advanced Background Animation System
+   PURPOSE: Multi-layer parallax with morphing constellations, particles,
+            mouse trails, and dynamic directory connection visualization
+   FEATURES: 5-layer canvas system with interactive effects
+   
+   HOW IT WORKS:
+   - Layer 1 (stars): Twinkling stars with parallax scrolling
+   - Layer 2 (constellations): Morphing lines that respond to mouse
+   - Layer 3 (particles): Floating ambient particles
+   - Layer 4 (mouseTrail): Glowing trail following mouse cursor
+   - Layer 5 (connections): Lines connecting related directory cards
+   
+   EXPECTED BEHAVIOR:
+   - Stars drift and twinkle as you scroll
+   - Constellations bend toward your mouse position
+   - Particles float with realistic physics
+   - Mouse trail creates magical comet effect
+   - Connection lines pulse between card pairs
+   ═════════════════════════════════════════════════════════════════ */
 (function initBackground(){
   var stars = document.getElementById('stars');
   var cons = document.getElementById('constellations');
-  if (!stars || !cons) return;
+  var particles = document.getElementById('particles');
+  var mouseTrail = document.getElementById('mouseTrail');
+  var connections = document.getElementById('connections');
+  
+  if (!stars || !cons || !particles || !mouseTrail || !connections) return;
   
   var DPR = Math.min(2, window.devicePixelRatio || 1);
   var W = window.innerWidth;
   var H = window.innerHeight;
   var scrollY = 0;
+  var mouseX = W / 2;
+  var mouseY = H / 2;
+  var prevMouseX = mouseX;
+  var prevMouseY = mouseY;
 
   function sizeCanv(){ 
     W = window.innerWidth; 
     H = window.innerHeight;
-    [stars, cons].forEach(function(c) { 
+    [stars, cons, particles, mouseTrail, connections].forEach(function(c) { 
       c.width = W * DPR; 
       c.height = H * DPR; 
       c.style.width = W + 'px'; 
@@ -620,11 +1453,23 @@ var DB = {
   window.addEventListener('scroll', function() {
     scrollY = window.pageYOffset || document.documentElement.scrollTop;
   });
+  window.addEventListener('mousemove', function(e) {
+    prevMouseX = mouseX;
+    prevMouseY = mouseY;
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  });
 
   var sctx = stars.getContext('2d');
   var cctx = cons.getContext('2d');
+  var pctx = particles.getContext('2d');
+  var mctx = mouseTrail.getContext('2d');
+  var connCtx = connections.getContext('2d');
   var rand = function(n) { return Math.random() * n; };
   
+  // ═══════════════════════════════════════════════════════════════
+  // STARS LAYER: Twinkling stars with parallax and drift
+  // ═══════════════════════════════════════════════════════════════
   var STAR_COUNT = Math.min(450, Math.floor(W * H / 3500));
   var pts = [];
   for (var i = 0; i < STAR_COUNT; i++) {
@@ -633,7 +1478,9 @@ var DB = {
       y: rand(H), 
       r: Math.random() * 1.4 + 0.2, 
       a: Math.random(),
-      baseY: 0
+      baseY: 0,
+      vx: (Math.random() - 0.5) * 0.05,
+      vy: (Math.random() - 0.5) * 0.05
     });
   }
   pts.forEach(function(p) { p.baseY = p.y; });
@@ -644,12 +1491,23 @@ var DB = {
     sctx.scale(DPR, DPR);
     
     pts.forEach(function(p) {
+      // Twinkling effect through alpha oscillation
       p.a += (Math.random() - 0.5) * 0.04;
       var a = 0.5 + 0.5 * Math.sin(p.a);
-      var parallaxY = p.baseY + scrollY * 0.05 * (p.r / 1.4);
+      
+      // Mouse parallax creates depth perception
+      var dx = (mouseX - W / 2) * 0.01 * p.r;
+      var dy = (mouseY - H / 2) * 0.01 * p.r;
+      
+      // Combine scroll parallax with mouse parallax
+      var parallaxY = p.baseY + scrollY * 0.05 * (p.r / 1.4) + dy;
       p.y = parallaxY % H;
+      p.x = (p.x + p.vx + dx) % W;
+      if (p.x < 0) p.x += W;
       
       sctx.fillStyle = 'rgba(180,210,255,' + (0.3 + 0.7 * a) + ')';
+      sctx.shadowBlur = 4;
+      sctx.shadowColor = 'rgba(180,210,255,0.5)';
       sctx.beginPath(); 
       sctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); 
       sctx.fill();
@@ -660,6 +1518,9 @@ var DB = {
   }
   drawStars();
 
+  // ═══════════════════════════════════════════════════════════════
+  // CONSTELLATION LAYER: Morphing lines responsive to mouse
+  // ═══════════════════════════════════════════════════════════════
   var constellationNodes = [];
   for (var i = 0; i < 12; i++) {
     var nodes = [];
@@ -669,33 +1530,51 @@ var DB = {
         baseY: (H * (i % 2 ? 0.2 : 0.7)) + 18 * j + 14 * Math.sin(i * j),
         x: 0,
         y: 0,
-        phase: i + j
+        phase: i + j,
+        targetX: 0,
+        targetY: 0
       });
     }
     constellationNodes.push(nodes);
   }
   
+  var time = 0;
   function drawConstellations(){
+    time += 0.01;
     cctx.clearRect(0, 0, W * DPR, H * DPR);
     cctx.save(); 
     cctx.scale(DPR, DPR);
     cctx.strokeStyle = 'rgba(120,190,255,.12)';
     cctx.lineWidth = 1;
     
-    var scrollFactor = Math.sin(scrollY * 0.001) * 20;
-    var waveFactor = Math.cos(scrollY * 0.0015) * 15;
+    var scrollFactor = Math.sin(scrollY * 0.001 + time) * 20;
+    var waveFactor = Math.cos(scrollY * 0.0015 + time) * 15;
     
     constellationNodes.forEach(function(nodes, i) {
       cctx.beginPath();
       nodes.forEach(function(node, j) {
-        node.x = node.baseX + scrollFactor * Math.sin(node.phase + scrollY * 0.002);
-        node.y = (node.baseY + scrollY * 0.08 * (i % 2 ? 1 : -1)) % H + waveFactor * Math.cos(node.phase);
+        // Calculate distance from mouse to create gravitational pull effect
+        var mouseDist = Math.sqrt(Math.pow(mouseX - node.baseX, 2) + Math.pow(mouseY - node.baseY, 2));
+        var morphFactor = Math.max(0, 1 - mouseDist / 300);
+        
+        // Morph constellation toward mouse with smooth interpolation
+        node.x = node.baseX + scrollFactor * Math.sin(node.phase + time * 2) + 
+                 (mouseX - W / 2) * 0.02 * morphFactor;
+        node.y = (node.baseY + scrollY * 0.08 * (i % 2 ? 1 : -1)) % H + 
+                 waveFactor * Math.cos(node.phase + time) +
+                 (mouseY - H / 2) * 0.02 * morphFactor;
         
         if (j === 0) cctx.moveTo(node.x, node.y); 
         else cctx.lineTo(node.x, node.y);
         
-        cctx.fillStyle = 'rgba(120,190,255,.3)';
-        cctx.fillRect(node.x - 1, node.y - 1, 2, 2);
+        // Glowing nodes that pulse with time
+        var pulse = 0.3 + 0.2 * Math.sin(time * 3 + node.phase);
+        cctx.fillStyle = 'rgba(120,190,255,' + pulse + ')';
+        cctx.shadowBlur = 8;
+        cctx.shadowColor = 'rgba(120,190,255,0.8)';
+        cctx.beginPath();
+        cctx.arc(node.x, node.y, 2, 0, Math.PI * 2);
+        cctx.fill();
       });
       cctx.stroke();
     });
@@ -704,11 +1583,748 @@ var DB = {
     requestAnimationFrame(drawConstellations);
   }
   drawConstellations();
+  
+  // ═══════════════════════════════════════════════════════════════
+  // PARTICLE LAYER: Floating ambient particles with physics
+  // ═══════════════════════════════════════════════════════════════
+  var particleList = [];
+  for (var i = 0; i < CONFIG.ANIMATION.PARTICLE_COUNT; i++) {
+    particleList.push({
+      x: rand(W),
+      y: rand(H),
+      vx: (Math.random() - 0.5) * 0.5,
+      vy: (Math.random() - 0.5) * 0.5,
+      r: Math.random() * 2 + 0.5,
+      life: Math.random()
+    });
+  }
+  
+  function drawParticles(){
+    pctx.clearRect(0, 0, W * DPR, H * DPR);
+    pctx.save();
+    pctx.scale(DPR, DPR);
+    
+    particleList.forEach(function(p) {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.life += 0.01;
+      
+      // Bounce off edges with damping
+      if (p.x < 0 || p.x > W) p.vx *= -1;
+      if (p.y < 0 || p.y > H) p.vy *= -1;
+      
+      var alpha = 0.3 * Math.sin(p.life);
+      pctx.fillStyle = 'rgba(78,224,161,' + Math.abs(alpha) + ')';
+      pctx.shadowBlur = 6;
+      pctx.shadowColor = 'rgba(78,224,161,0.5)';
+      pctx.beginPath();
+      pctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      pctx.fill();
+    });
+    
+    pctx.restore();
+    requestAnimationFrame(drawParticles);
+  }
+  drawParticles();
+  
+  // ═══════════════════════════════════════════════════════════════
+  // MOUSE TRAIL LAYER: Comet-like trail following cursor
+  // HOW IT WORKS: Stores last 20 mouse positions and draws gradient
+  // EXPECTED BEHAVIOR: Creates smooth trailing effect like shooting star
+  // ═══════════════════════════════════════════════════════════════
+  var trailPoints = [];
+  var maxTrailLength = 20;
+  
+  window.addEventListener('mousemove', function(e) {
+    trailPoints.push({
+      x: e.clientX,
+      y: e.clientY,
+      life: 1.0
+    });
+    if (trailPoints.length > maxTrailLength) {
+      trailPoints.shift();
+    }
+  });
+  
+  function drawMouseTrail(){
+    mctx.clearRect(0, 0, W * DPR, H * DPR);
+    mctx.save();
+    mctx.scale(DPR, DPR);
+    
+    // Fade out old trail points
+    trailPoints.forEach(function(p) {
+      p.life *= 0.92;
+    });
+    
+    // Remove dead points
+    trailPoints = trailPoints.filter(function(p) { return p.life > 0.05; });
+    
+    // Draw trail as connected gradient circles
+    trailPoints.forEach(function(p, i) {
+      var size = 8 * p.life;
+      var alpha = 0.4 * p.life;
+      
+      var gradient = mctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, size);
+      gradient.addColorStop(0, 'rgba(101,179,255,' + alpha + ')');
+      gradient.addColorStop(1, 'rgba(101,179,255,0)');
+      
+      mctx.fillStyle = gradient;
+      mctx.beginPath();
+      mctx.arc(p.x, p.y, size, 0, Math.PI * 2);
+      mctx.fill();
+    });
+    
+    mctx.restore();
+    requestAnimationFrame(drawMouseTrail);
+  }
+  drawMouseTrail();
+  
+  // ═══════════════════════════════════════════════════════════════
+  // CONNECTION LAYER: Dynamic lines between related directory cards
+  // HOW TO USE: Call updateConnections() when cards are rendered
+  // EXPECTED OUTCOME: Pulsing lines connect related directories
+  // ═══════════════════════════════════════════════════════════════
+  window.updateConnections = function() {
+    connCtx.clearRect(0, 0, W * DPR, H * DPR);
+    connCtx.save();
+    connCtx.scale(DPR, DPR);
+    
+    var cards = document.querySelectorAll('.card');
+    var cardPositions = [];
+    
+    cards.forEach(function(card) {
+      var rect = card.getBoundingClientRect();
+      var tags = card.dataset.path ? autoTag(card.dataset.path) : [];
+      cardPositions.push({
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2,
+        tags: tags,
+        element: card
+      });
+    });
+    
+    // Draw connections between cards with shared tags
+    connCtx.strokeStyle = 'rgba(78,224,161,0.15)';
+    connCtx.lineWidth = 1;
+    
+    for (var i = 0; i < cardPositions.length; i++) {
+      for (var j = i + 1; j < cardPositions.length; j++) {
+        var hasSharedTag = cardPositions[i].tags.some(function(tag) {
+          return cardPositions[j].tags.indexOf(tag) !== -1;
+        });
+        
+        if (hasSharedTag) {
+          connCtx.beginPath();
+          connCtx.moveTo(cardPositions[i].x, cardPositions[i].y);
+          connCtx.lineTo(cardPositions[j].x, cardPositions[j].y);
+          connCtx.stroke();
+        }
+      }
+    }
+    
+    connCtx.restore();
+  };
+  
+  // Update connections periodically
+  setInterval(function() {
+    if (window.updateConnections) window.updateConnections();
+  }, 2000);
 })();
 
-/* ═══════════════════════════════════════════════════════════════════
+/* ═════════════════════════════════════════════════════════════════
+   SECTION: Dashboard Manager
+   PURPOSE: Track and visualize user's exploration journey
+   FEATURES: Real-time statistics, activity charts, category analysis
+   
+   HOW IT WORKS:
+   - Tracks all directory visits and stores timestamps
+   - Calculates enhancement progress percentage
+   - Analyzes favorite categories based on visit frequency
+   - Generates animated bar chart of daily activity
+   
+   HOW TO USE:
+   - Dashboard.init() on page load
+   - Dashboard.update() after any directory interaction
+   - Dashboard automatically refreshes every 5 seconds
+   
+   EXPECTED OUTCOME:
+   - Beautiful animated statistics panel
+   - Visual feedback on exploration progress
+   - Insights into usage patterns
+   ═════════════════════════════════════════════════════════════════ */
+var Dashboard = {
+  isOpen: false,
+  updateInterval: null,
+  
+  init: function() {
+    var self = this;
+    var toggle = document.getElementById('dashboardToggle');
+    var panel = document.getElementById('dashboardPanel');
+    var closeBtn = document.getElementById('dashboardClose');
+    
+    if (toggle && panel) {
+      toggle.addEventListener('click', function() {
+        self.toggle();
+      });
+    }
+    
+    if (closeBtn && panel) {
+      closeBtn.addEventListener('click', function() {
+        self.close();
+      });
+    }
+    
+    // Auto-update every 5 seconds when open
+    this.updateInterval = setInterval(function() {
+      if (self.isOpen) {
+        self.update();
+      }
+    }, 5000);
+    
+    // Initial update
+    this.update();
+  },
+  
+  toggle: function() {
+    var panel = document.getElementById('dashboardPanel');
+    if (!panel) return;
+    
+    this.isOpen = !this.isOpen;
+    if (this.isOpen) {
+      panel.classList.add('open');
+      this.update();
+    } else {
+      panel.classList.remove('open');
+    }
+  },
+  
+  close: function() {
+    var panel = document.getElementById('dashboardPanel');
+    if (!panel) return;
+    
+    this.isOpen = false;
+    panel.classList.remove('open');
+  },
+  
+  update: function() {
+    var self = this;
+    
+    Promise.all([
+      DB.getAll(CONFIG.STORE_NAMES.DIRECTORIES),
+      DB.getAll(CONFIG.STORE_NAMES.USER_DATA)
+    ]).then(function(results) {
+      var allDirs = results[0];
+      
+      // Calculate statistics
+      var totalVisits = 0;
+      var enhancedCount = 0;
+      var categoryVisits = {};
+      var dailyActivity = {};
+      
+      allDirs.forEach(function(dir) {
+        if (dir.visitCount) {
+          totalVisits += dir.visitCount;
+        }
+        if (dir.enhanced) {
+          enhancedCount++;
+        }
+        
+        // Track category visits
+        var tags = dir.tags || autoTag(dir.path);
+        tags.forEach(function(tag) {
+          categoryVisits[tag] = (categoryVisits[tag] || 0) + (dir.visitCount || 0);
+        });
+        
+        // Track daily activity
+        if (dir.lastVisit) {
+          var date = new Date(dir.lastVisit);
+          var dayKey = date.toISOString().split('T')[0];
+          dailyActivity[dayKey] = (dailyActivity[dayKey] || 0) + 1;
+        }
+      });
+      
+      // Update DOM
+      var totalVisitsEl = document.getElementById('totalVisits');
+      if (totalVisitsEl) {
+        self.animateNumber(totalVisitsEl, parseInt(totalVisitsEl.textContent) || 0, totalVisits);
+      }
+      
+      var enhancedCountEl = document.getElementById('enhancedCount');
+      var totalDirsEl = document.getElementById('totalDirs');
+      if (enhancedCountEl && totalDirsEl) {
+        self.animateNumber(enhancedCountEl, parseInt(enhancedCountEl.textContent) || 0, enhancedCount);
+        totalDirsEl.textContent = DIRS.length;
+      }
+      
+      var progressBar = document.getElementById('enhancementProgress');
+      if (progressBar) {
+        var percentage = (enhancedCount / DIRS.length) * 100;
+        progressBar.style.width = percentage + '%';
+      }
+      
+      // Update favorite categories
+      self.renderFavoriteCategories(categoryVisits);
+      
+      // Update activity chart
+      self.renderActivityChart(dailyActivity);
+      
+    }).catch(function(error) {
+      ErrorHandler.handle(error, 'Dashboard.update');
+    });
+  },
+  
+  animateNumber: function(element, start, end) {
+    var duration = 1000;
+    var startTime = Date.now();
+    
+    function update() {
+      var elapsed = Date.now() - startTime;
+      var progress = Math.min(elapsed / duration, 1);
+      var current = Math.floor(start + (end - start) * progress);
+      element.textContent = current;
+      
+      if (progress < 1) {
+        requestAnimationFrame(update);
+      }
+    }
+    
+    update();
+  },
+  
+  renderFavoriteCategories: function(categoryVisits) {
+    var container = document.getElementById('favCategories');
+    if (!container) return;
+    
+    var sorted = Object.keys(categoryVisits).sort(function(a, b) {
+      return categoryVisits[b] - categoryVisits[a];
+    }).slice(0, 5);
+    
+    container.innerHTML = '';
+    sorted.forEach(function(category) {
+      var badge = document.createElement('span');
+      badge.className = 'badge';
+      if (category === 'Sentinel') badge.className += ' b-sentinel';
+      else if (category === 'Peace') badge.className += ' b-peace';
+      else if (category === 'Corruption') badge.className += ' b-corrupt';
+      else if (category === 'Dashboard') badge.className += ' b-dash';
+      badge.textContent = category + ' (' + categoryVisits[category] + ')';
+      container.appendChild(badge);
+    });
+  },
+  
+  renderActivityChart: function(dailyActivity) {
+    var container = document.getElementById('activityChart');
+    if (!container) return;
+    
+    // Get last 7 days
+    var days = [];
+    for (var i = 6; i >= 0; i--) {
+      var date = new Date();
+      date.setDate(date.getDate() - i);
+      days.push(date.toISOString().split('T')[0]);
+    }
+    
+    container.innerHTML = '';
+    var maxActivity = Math.max.apply(null, days.map(function(day) {
+      return dailyActivity[day] || 0;
+    })) || 1;
+    
+    days.forEach(function(day, i) {
+      var activity = dailyActivity[day] || 0;
+      var bar = document.createElement('div');
+      bar.className = 'chart-bar';
+      bar.style.left = (i * 13) + '%';
+      bar.style.height = ((activity / maxActivity) * 70) + 'px';
+      bar.title = day + ': ' + activity + ' visits';
+      container.appendChild(bar);
+    });
+  }
+};
+
+/* ═════════════════════════════════════════════════════════════════
+   SECTION: 3D Card Tilt System
+   PURPOSE: Track mouse position relative to cards for 3D rotation
+   
+   HOW IT WORKS:
+   - Listens to mousemove on each card
+   - Calculates mouse position relative to card center
+   - Converts position to rotation angles (X and Y axis)
+   - Updates CSS custom properties for smooth transform
+   
+   HOW TO USE:
+   - Call CardTilt.attach(cardElement) when creating cards
+   - Card automatically tilts toward mouse when hovering
+   
+   EXPECTED OUTCOME:
+   - Cards tilt naturally toward your cursor
+   - Creates 3D holographic interface feeling
+   - Smooth interpolation prevents jitter
+   ═════════════════════════════════════════════════════════════════ */
+var CardTilt = {
+  attach: function(card) {
+    var self = this;
+    
+    card.addEventListener('mousemove', function(e) {
+      var rect = card.getBoundingClientRect();
+      var x = e.clientX - rect.left;
+      var y = e.clientY - rect.top;
+      var centerX = rect.width / 2;
+      var centerY = rect.height / 2;
+      
+      // Calculate rotation angles (-15 to +15 degrees)
+      var rotateX = ((y - centerY) / centerY) * -15;
+      var rotateY = ((x - centerX) / centerX) * 15;
+      
+      card.style.setProperty('--rotateX', rotateX + 'deg');
+      card.style.setProperty('--rotateY', rotateY + 'deg');
+      
+      // Update ripple position
+      RippleEffect.create(card, x, y);
+    });
+    
+    card.addEventListener('mouseleave', function() {
+      card.style.setProperty('--rotateX', '0deg');
+      card.style.setProperty('--rotateY', '0deg');
+    });
+    
+    // Flip animation on double-click
+    card.addEventListener('dblclick', function() {
+      if (!card.classList.contains('flip-enter')) {
+        card.classList.add('flip-enter');
+        SoundSystem.play('whoosh'); // Play whoosh sound on flip
+        setTimeout(function() {
+          card.classList.remove('flip-enter');
+        }, 800);
+      }
+    });
+  }
+};
+
+/* ═════════════════════════════════════════════════════════════════
+   SECTION: Web Audio API Sound System
+   PURPOSE: Procedural sound generation for UI feedback
+   ═════════════════════════════════════════════════════════════════ */
+var SoundSystem = {
+  context: null,
+  masterGain: null,
+  enabled: true,
+  
+  init: function() {
+    try {
+      var AudioContext = window.AudioContext || window.webkitAudioContext;
+      this.context = new AudioContext();
+      this.masterGain = this.context.createGain();
+      this.masterGain.gain.value = CONFIG.SOUND.MASTER_VOLUME;
+      this.masterGain.connect(this.context.destination);
+      this.enabled = CONFIG.SOUND.ENABLED;
+      console.log('✓ Sound system initialized');
+    } catch(e) {
+      console.warn('Web Audio API not supported:', e);
+      this.enabled = false;
+    }
+  },
+  
+  toggle: function() {
+    this.enabled = !this.enabled;
+    var btn = document.getElementById('soundToggle');
+    if (btn) {
+      btn.textContent = this.enabled ? '🔊' : '🔇';
+      btn.classList.toggle('muted', !this.enabled);
+    }
+    Toast.show('Sound ' + (this.enabled ? 'enabled' : 'disabled'), 'info', 2000);
+  },
+  
+  play: function(type) {
+    if (!this.enabled || !this.context) return;
+    var now = this.context.currentTime;
+    switch(type) {
+      case 'click': this.playClick(now); break;
+      case 'hover': this.playHover(now); break;
+      case 'success': this.playSuccess(now); break;
+      case 'levelup': this.playLevelUp(now); break;
+      case 'whoosh': this.playWhoosh(now); break;
+      case 'enhance': this.playEnhance(now); break;
+    }
+  },
+  
+  playClick: function(time) {
+    var osc = this.context.createOscillator();
+    var gain = this.context.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(800, time);
+    gain.gain.setValueAtTime(CONFIG.SOUND.VOLUME, time);
+    gain.gain.exponentialRampToValueAtTime(0.01, time + 0.05);
+    osc.connect(gain);
+    gain.connect(this.masterGain);
+    osc.start(time);
+    osc.stop(time + 0.05);
+  },
+  
+  playHover: function(time) {
+    var osc = this.context.createOscillator();
+    var gain = this.context.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(400, time);
+    gain.gain.setValueAtTime(CONFIG.SOUND.VOLUME * 0.3, time);
+    gain.gain.exponentialRampToValueAtTime(0.01, time + 0.1);
+    osc.connect(gain);
+    gain.connect(this.masterGain);
+    osc.start(time);
+    osc.stop(time + 0.1);
+  },
+  
+  playSuccess: function(time) {
+    var frequencies = [261.63, 329.63, 392.00];
+    var self = this;
+    frequencies.forEach(function(freq, i) {
+      var osc = self.context.createOscillator();
+      var gain = self.context.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, time + i * 0.05);
+      gain.gain.setValueAtTime(CONFIG.SOUND.VOLUME * 0.4, time + i * 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.01, time + i * 0.05 + 0.5);
+      osc.connect(gain);
+      gain.connect(self.masterGain);
+      osc.start(time + i * 0.05);
+      osc.stop(time + i * 0.05 + 0.5);
+    });
+  },
+  
+  playLevelUp: function(time) {
+    var frequencies = [261.63, 329.63, 392.00, 523.25];
+    var self = this;
+    frequencies.forEach(function(freq, i) {
+      var osc = self.context.createOscillator();
+      var gain = self.context.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, time + i * 0.08);
+      osc.frequency.exponentialRampToValueAtTime(freq * 1.5, time + i * 0.08 + 0.3);
+      gain.gain.setValueAtTime(CONFIG.SOUND.VOLUME * 0.5, time + i * 0.08);
+      gain.gain.exponentialRampToValueAtTime(0.01, time + i * 0.08 + 0.8);
+      osc.connect(gain);
+      gain.connect(self.masterGain);
+      osc.start(time + i * 0.08);
+      osc.stop(time + i * 0.08 + 0.8);
+    });
+  },
+  
+  playWhoosh: function(time) {
+    var osc = this.context.createOscillator();
+    var gain = this.context.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(200, time);
+    osc.frequency.exponentialRampToValueAtTime(50, time + 0.3);
+    gain.gain.setValueAtTime(CONFIG.SOUND.VOLUME * 0.2, time);
+    gain.gain.exponentialRampToValueAtTime(0.01, time + 0.3);
+    osc.connect(gain);
+    gain.connect(this.masterGain);
+    osc.start(time);
+    osc.stop(time + 0.3);
+  },
+  
+  playEnhance: function(time) {
+    var frequencies = [800, 1200, 1600];
+    var self = this;
+    frequencies.forEach(function(freq, i) {
+      var osc = self.context.createOscillator();
+      var gain = self.context.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, time + i * 0.05);
+      gain.gain.setValueAtTime(CONFIG.SOUND.VOLUME * 0.3, time + i * 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.01, time + i * 0.05 + 0.4);
+      osc.connect(gain);
+      gain.connect(self.masterGain);
+      osc.start(time + i * 0.05);
+      osc.stop(time + i * 0.05 + 0.4);
+    });
+  }
+};
+
+/* ═════════════════════════════════════════════════════════════════
+   SECTION: Achievement System
+   ═════════════════════════════════════════════════════════════════ */
+var AchievementSystem = {
+  unlocked: {},
+  themesTried: {},
+  
+  init: function() {
+    var self = this;
+    return DB.get(CONFIG.STORE_NAMES.USER_DATA, 'achievements').then(function(data) {
+      if (data && data.value) {
+        self.unlocked = data.value.unlocked || {};
+        self.themesTried = data.value.themesTried || {};
+      }
+    }).catch(function(error) {
+      console.warn('Achievement init error:', error);
+    });
+  },
+  
+  save: function() {
+    return DB.put(CONFIG.STORE_NAMES.USER_DATA, {
+      key: 'achievements',
+      value: {
+        unlocked: this.unlocked,
+        themesTried: this.themesTried
+      }
+    });
+  },
+  
+  check: function(trigger, value) {
+    var self = this;
+    CONFIG.ACHIEVEMENTS.forEach(function(achievement) {
+      if (self.unlocked[achievement.id]) return;
+      var shouldUnlock = false;
+      if (achievement.id === 'first_visit' && trigger === 'visit' && value >= 1) shouldUnlock = true;
+      else if (achievement.id === 'five_visits' && trigger === 'visit' && value >= 5) shouldUnlock = true;
+      else if (achievement.id === 'ten_visits' && trigger === 'visit' && value >= 10) shouldUnlock = true;
+      else if (achievement.id === 'first_enhance' && trigger === 'enhance' && value >= 1) shouldUnlock = true;
+      else if (achievement.id === 'five_enhance' && trigger === 'enhance' && value >= 5) shouldUnlock = true;
+      else if (achievement.id === 'level_five' && trigger === 'level' && value >= 5) shouldUnlock = true;
+      else if (achievement.id === 'all_themes' && trigger === 'themes' && Object.keys(self.themesTried).length >= 4) shouldUnlock = true;
+      else if (achievement.id === 'dashboard_opened' && trigger === 'dashboard') shouldUnlock = true;
+      if (shouldUnlock) self.unlock(achievement);
+    });
+  },
+  
+  unlock: function(achievement) {
+    this.unlocked[achievement.id] = Date.now();
+    this.save();
+    State.addXP(achievement.xp);
+    SoundSystem.play('success');
+    this.showNotification(achievement);
+  },
+  
+  showNotification: function(achievement) {
+    var container = document.getElementById('achievementContainer');
+    if (!container) return;
+    var notification = document.createElement('div');
+    notification.className = 'achievement';
+    notification.innerHTML = 
+      '<div class="achievement-icon">' + achievement.icon + '</div>' +
+      '<div class="achievement-content">' +
+        '<h4>Achievement Unlocked!</h4>' +
+        '<p><strong>' + achievement.name + '</strong> - ' + achievement.desc + '</p>' +
+        '<div class="achievement-xp">+' + achievement.xp + ' XP</div>' +
+      '</div>';
+    container.appendChild(notification);
+    setTimeout(function() {
+      notification.style.opacity = '0';
+      notification.style.transform = 'translateY(-50px) scale(0.8)';
+      setTimeout(function() {
+        if (notification.parentNode) notification.parentNode.removeChild(notification);
+      }, 400);
+    }, 5000);
+  },
+  
+  trackTheme: function(theme) {
+    this.themesTried[theme] = true;
+    this.save();
+    this.check('themes');
+  }
+};
+
+/* ═════════════════════════════════════════════════════════════════
+   SECTION: Ripple Effect System
+   PURPOSE: Create ripple animations on card interactions
+   ═════════════════════════════════════════════════════════════════ */
+var RippleEffect = {
+  create: function(element, x, y) {
+    element.style.setProperty('--x', x + 'px');
+    element.style.setProperty('--y', y + 'px');
+  }
+};
+
+/* ═════════════════════════════════════════════════════════════════
+   SECTION: Theme System
+   PURPOSE: Dynamic theme switching with smooth transitions
+   ═════════════════════════════════════════════════════════════════ */
+var ThemeManager = {
+  currentTheme: 'space',
+  
+  init: function() {
+    var self = this;
+    var savedTheme = localStorage.getItem('galactic-theme') || 'space';
+    this.setTheme(savedTheme);
+    
+    var themeBtns = document.querySelectorAll('.theme-btn');
+    themeBtns.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var theme = this.dataset.theme;
+        self.setTheme(theme);
+      });
+    });
+  },
+  
+  setTheme: function(theme) {
+    this.currentTheme = theme;
+    document.body.setAttribute('data-theme', theme);
+    localStorage.setItem('galactic-theme', theme);
+    
+    var themeBtns = document.querySelectorAll('.theme-btn');
+    themeBtns.forEach(function(btn) {
+      if (btn.dataset.theme === theme) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+    
+    Toast.show('Theme changed to ' + theme, 'success', 2000);
+  }
+};
+
+/* ═════════════════════════════════════════════════════════════════
+   SECTION: Export System
+   PURPOSE: Export directory data in multiple formats
+   ═════════════════════════════════════════════════════════════════ */
+var ExportManager = {
+  exportHTML: function() {
+    var html = document.documentElement.outerHTML;
+    this.download(html, 'galactic-directory.html', 'text/html');
+    Toast.show('HTML exported successfully', 'success');
+  },
+  
+  exportJSON: function() {
+    DB.getAll(CONFIG.STORE_NAMES.DIRECTORIES).then(function(dirs) {
+      var data = {
+        version: CONFIG.DB_VERSION,
+        exportDate: new Date().toISOString(),
+        directories: dirs,
+        userProgress: {
+          level: State.lvl,
+          xp: State.xp,
+          favorites: State.favs
+        }
+      };
+      var json = JSON.stringify(data, null, 2);
+      ExportManager.download(json, 'galactic-directory-data.json', 'application/json');
+      Toast.show('JSON exported successfully', 'success');
+    }).catch(function(error) {
+      ErrorHandler.handle(error, 'ExportManager.exportJSON');
+    });
+  },
+  
+  exportPDF: function() {
+    Toast.show('Opening print dialog for PDF export...', 'info');
+    window.print();
+  },
+  
+  download: function(content, filename, mimeType) {
+    var blob = new Blob([content], { type: mimeType });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+};
+
+/* ═════════════════════════════════════════════════════════════════
    SECTION: Directory Data
-   ═══════════════════════════════════════════════════════════════════ */
+   ═════════════════════════════════════════════════════════════════ */
 var DIRS = [
   "/inspiration","/DOnate","/Foster","/YMM","/aeroglass-window-film",
   "/ai-collective-governance-architectures","/ai-support-site","/aifinalwarning",
@@ -783,9 +2399,9 @@ function autoTag(name) {
   return tags.length ? tags : ["Misc"];
 }
 
-/* ═══════════════════════════════════════════════════════════════════
+/* ═════════════════════════════════════════════════════════════════
    SECTION: User State Management
-   ═══════════════════════════════════════════════════════════════════ */
+   ═════════════════════════════════════════════════════════════════ */
 var State = {
   xp: 0,
   lvl: 1,
@@ -835,7 +2451,7 @@ var State = {
     return this.save().then(function() {
       self.renderHUD();
       if (leveledUp) {
-        Toast.show('Level Up! You are now level ' + self.lvl, 'success');
+        Toast.show('🎉 Level Up! You are now level ' + self.lvl, 'success', 5000);
       }
     });
   },
@@ -855,11 +2471,10 @@ var State = {
   }
 };
 
-/* ═══════════════════════════════════════════════════════════════════
-   SECTION: AI Enhancement System (Pure Fetch API - No React)
+/* ═════════════════════════════════════════════════════════════════
+   SECTION: AI Enhancement System (Pure Fetch API)
    PURPOSE: Direct Claude API integration using native fetch()
-   NOTE: This is standalone JavaScript - no frameworks required
-   ═══════════════════════════════════════════════════════════════════ */
+   ═════════════════════════════════════════════════════════════════ */
 var AI = {
   lastCallTime: 0,
   processing: false,
@@ -1071,9 +2686,9 @@ var AI = {
   }
 };
 
-/* ═══════════════════════════════════════════════════════════════════
-   SECTION: UI Rendering System
-   ═══════════════════════════════════════════════════════════════════ */
+/* ═════════════════════════════════════════════════════════════════
+   SECTION: UI Rendering System with Advanced Animations
+   ═════════════════════════════════════════════════════════════════ */
 var UI = {
   mkEl: function(tag, cls, txt) {
     var e = document.createElement(tag);
@@ -1114,16 +2729,38 @@ var UI = {
       var card = self.mkEl('div', 'card' + (isSpecial ? ' special' : '') + (dirData.enhanced ? ' enhanced' : ''));
       card.dataset.path = path;
       
-      var title = self.mkEl('div', 'title', dirData.title);
+      // Attach 3D tilt system for holographic effect
+      CardTilt.attach(card);
+      
+      // Click to expand/collapse with flip animation
+      var titleEl = self.mkEl('div', 'title', dirData.title);
+      titleEl.style.cursor = 'pointer';
+      titleEl.addEventListener('click', function(e) {
+        if (e.target.tagName !== 'A' && e.target.tagName !== 'BUTTON') {
+          card.classList.toggle('expanded');
+          // Trigger connection update after expansion
+          setTimeout(function() {
+            if (window.updateConnections) window.updateConnections();
+          }, 100);
+        }
+      });
+      
       var pathEl = self.mkEl('div', 'path', path);
       
-      card.appendChild(title);
+      card.appendChild(titleEl);
       card.appendChild(pathEl);
       
       if (dirData.description) {
         var desc = self.mkEl('div', 'description', dirData.description);
         card.appendChild(desc);
       }
+      
+      // Full content (hidden until expanded)
+      var fullContent = self.mkEl('div', 'full-content');
+      fullContent.innerHTML = '<p style="color:var(--muted); font-size:13px">🔍 Expanded view - Click title again to collapse</p>' +
+        '<p style="margin-top:8px; line-height:1.6">This directory is part of the Planetary Restoration Archive, dedicated to peaceful exploration and technological advancement for good.</p>' +
+        '<p style="margin-top:8px; font-size:12px; opacity:0.7">💡 Tip: Double-click the card for a flip animation!</p>';
+      card.appendChild(fullContent);
       
       var tagWrap = self.mkEl('div', 'tags');
       tags.forEach(function(tag) {
@@ -1157,7 +2794,8 @@ var UI = {
       
       var favBtn = self.mkEl('button', '', State.favs[path] ? '★' : '☆');
       favBtn.title = State.favs[path] ? 'Unfavorite' : 'Favorite';
-      favBtn.addEventListener('click', function() {
+      favBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
         self.toggleFavorite(path, favBtn);
       });
       
@@ -1168,7 +2806,8 @@ var UI = {
         enhanceBtn.disabled = true;
         enhanceBtn.style.opacity = '0.6';
       } else {
-        enhanceBtn.addEventListener('click', function() {
+        enhanceBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
           self.enhanceSingle(path, card);
         });
       }
@@ -1204,6 +2843,13 @@ var UI = {
     }
     
     State.addXP(xp);
+    
+    // Update dashboard with new visit data
+    if (Dashboard && Dashboard.update) {
+      setTimeout(function() {
+        Dashboard.update();
+      }, 500);
+    }
   },
   
   toggleFavorite: function(path, btn) {
@@ -1211,6 +2857,14 @@ var UI = {
     btn.textContent = State.favs[path] ? '★' : '☆';
     btn.title = State.favs[path] ? 'Unfavorite' : 'Favorite';
     State.save();
+    Toast.show(State.favs[path] ? 'Added to favorites' : 'Removed from favorites', 'success', 2000);
+    
+    // Update dashboard
+    if (Dashboard && Dashboard.update) {
+      setTimeout(function() {
+        Dashboard.update();
+      }, 500);
+    }
   },
   
   enhanceSingle: function(path, card) {
@@ -1221,6 +2875,13 @@ var UI = {
         return self.createCard(path).then(function(newCard) {
           card.replaceWith(newCard);
           Toast.show('Directory enhanced!', 'success');
+          
+          // Update dashboard with enhancement stats
+          if (Dashboard && Dashboard.update) {
+            setTimeout(function() {
+              Dashboard.update();
+            }, 500);
+          }
         });
       }
     }).finally(function() {
@@ -1307,6 +2968,11 @@ var UI = {
           msg.style.padding = '40px 20px';
           grid.appendChild(msg);
         }
+        
+        // Update connection visualization after cards are rendered
+        setTimeout(function() {
+          if (window.updateConnections) window.updateConnections();
+        }, 100);
       });
     }).catch(function(error) {
       grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; color:var(--danger)">Error loading directories. Please refresh.</div>';
@@ -1344,9 +3010,9 @@ var UI = {
   }
 };
 
-/* ═══════════════════════════════════════════════════════════════════
+/* ═════════════════════════════════════════════════════════════════
    SECTION: Event Handlers & UI Controls
-   ═══════════════════════════════════════════════════════════════════ */
+   ═════════════════════════════════════════════════════════════════ */
 function initControls() {
   var search = document.getElementById('search');
   var filter = document.getElementById('filter');
@@ -1354,6 +3020,9 @@ function initControls() {
   var enhancedBtn = document.getElementById('enhancedBtn');
   var aiEnhanceBtn = document.getElementById('aiEnhanceBtn');
   var resetBtn = document.getElementById('resetProg');
+  var exportHTML = document.getElementById('exportHTML');
+  var exportJSON = document.getElementById('exportJSON');
+  var exportPDF = document.getElementById('exportPDF');
   
   var getFilters = function() {
     return {
@@ -1399,6 +3068,24 @@ function initControls() {
     });
   }
   
+  if (exportHTML) {
+    exportHTML.addEventListener('click', function() {
+      ExportManager.exportHTML();
+    });
+  }
+  
+  if (exportJSON) {
+    exportJSON.addEventListener('click', function() {
+      ExportManager.exportJSON();
+    });
+  }
+  
+  if (exportPDF) {
+    exportPDF.addEventListener('click', function() {
+      ExportManager.exportPDF();
+    });
+  }
+  
   if (resetBtn) {
     resetBtn.addEventListener('click', function() {
       if (!confirm('⚠️ Reset ALL progress and AI enhancements? This cannot be undone.')) return;
@@ -1433,8 +3120,10 @@ function initControls() {
   
   if (aiMiniBtn && aiPanelMini) {
     aiMiniBtn.addEventListener('click', function() {
-      aiPanelMini.classList.add('open');
-      if (aiInputMini) aiInputMini.focus();
+      aiPanelMini.classList.toggle('open');
+      if (aiPanelMini.classList.contains('open') && aiInputMini) {
+        aiInputMini.focus();
+      }
     });
   }
   
@@ -1446,8 +3135,10 @@ function initControls() {
   
   if (aiStatus && aiPanelMini) {
     aiStatus.addEventListener('click', function() {
-      aiPanelMini.classList.add('open');
-      if (aiInputMini) aiInputMini.focus();
+      aiPanelMini.classList.toggle('open');
+      if (aiPanelMini.classList.contains('open') && aiInputMini) {
+        aiInputMini.focus();
+      }
     });
   }
   
@@ -1471,18 +3162,21 @@ function initControls() {
   }
 }
 
-/* ═══════════════════════════════════════════════════════════════════
+/* ═════════════════════════════════════════════════════════════════
    SECTION: Application Initialization
-   ═══════════════════════════════════════════════════════════════════ */
+   ═════════════════════════════════════════════════════════════════ */
 function init() {
-  console.log('%c🛡️ Galactic Directory', 'font-size:18px; color:#65b3ff; font-weight:bold');
-  console.log('%cAI-Enhanced · Local-First · Zero-Harm', 'color:#4ee0a1');
+  console.log('%c🛡️ Galactic Directory Enhanced v2.0', 'font-size:20px; color:#65b3ff; font-weight:bold');
+  console.log('%c✨ Phase 2: 3D Transformations + Advanced Animations', 'color:#4ee0a1; font-size:14px');
+  console.log('%cFeatures: 3D Card Tilt · Mouse Trails · Connection Visualization · Dashboard Analytics', 'color:#9bb0cc');
   console.log('%cPure Vanilla JavaScript - No React - Standalone HTML', 'color:#9bb0cc');
   
   DB.open().then(function() {
     return State.load();
   }).then(function() {
     State.renderHUD();
+    ThemeManager.init();
+    Dashboard.init(); // Initialize the dashboard system
     initControls();
     return Promise.all([
       UI.renderFeatured(),
@@ -1491,10 +3185,11 @@ function init() {
   }).then(function() {
     if (State.lvl === 1 && State.xp === 0) {
       setTimeout(function() {
-        Toast.show('Welcome! Click "🤖 AI Enhance All" to let the AI improve directory metadata.', 'info', 8000);
+        Toast.show('🚀 Welcome! Hover over cards to see 3D tilt effects. Double-click for flip animation. Click 📊 to view your journey dashboard!', 'info', 10000);
       }, 1000);
     }
-    console.log('%c✓ Initialization complete', 'color:#4ade80; font-weight:bold');
+    console.log('%c✓ Phase 2 initialization complete', 'color:#4ade80; font-weight:bold');
+    console.log('%c💡 Try: Hover cards for 3D tilt, double-click to flip, open dashboard for stats', 'color:#ffd166');
   }).catch(function(error) {
     console.error('Fatal initialization error:', error);
     Toast.show('Failed to initialize application. Please refresh the page.', 'error');

@@ -1,0 +1,651 @@
+<!doctype html>
+<html lang="en" data-theme="solar">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Planetary Restoration Portal · Foster + Navi</title>
+  <meta name="description" content="Faceted portal into missions, blueprints, tools, dashboards, governance, and proofs—single-file, offline-first.">
+  <meta name="theme-color" content="#0b1b17">
+  <link rel="manifest" href="#" id="app-manifest"><!-- set at runtime via Blob -->
+
+  <style>
+    /* ====== Core Theme (WCAG AA-friendly) ====== */
+    :root{
+      --bg:#0b1b17; --fg:#e6fff6; --muted:#a6d5c9; --accent:#00d3a7; --ink:#06110f;
+      --card:#112320; --line:#1b3a35; --ring:0 0 0 .2rem color-mix(in oklab, var(--accent), white 25%);
+      --shadow: 0 6px 20px color-mix(in oklab, black, transparent 80%);
+      --radius: 18px;
+      --parallax-a: linear-gradient(180deg, #06110f, #0b1b17);
+      --parallax-b: radial-gradient(1200px 600px at 20% 10%, #0f2e27 0%, transparent 60%),
+                    radial-gradient(1000px 500px at 80% 0%, #0a3a30 0%, transparent 65%);
+    }
+    @media (prefers-color-scheme: light){ :root{
+      --bg:#fbfffd; --fg:#10211c; --ink:#0c1c18; --card:#e9fbf5; --line:#cdebe2; --muted:#3b6b5e;
+      --parallax-a: linear-gradient(180deg, #f2fffb, #fbfffd);
+      --parallax-b: radial-gradient(1200px 600px at 15% 8%, #dff6ee 0%, transparent 60%),
+                    radial-gradient(1000px 500px at 85% 0%, #d5f0e7 0%, transparent 65%);
+    }}
+    @media (prefers-reduced-motion: reduce){ *{animation:none!important; transition:none!important; scroll-behavior:auto!important} html{background-attachment:initial!important} }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0; color:var(--fg); background:var(--bg);
+      font: 16px/1.55 system-ui, Segoe UI, Roboto, "Noto Color Emoji", sans-serif;
+      overflow-x:hidden;
+    }
+    .skip-link{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}
+    .skip-link:focus{left:8px;top:8px;width:auto;height:auto;background:var(--accent);color:var(--ink);padding:.5rem 1rem;border-radius:.5rem}
+
+    /* ====== Parallax Background (GPU-friendly) ====== */
+    .parallax{
+      position:fixed; inset:0; z-index:-2; pointer-events:none;
+      background:
+        var(--parallax-a),
+        var(--parallax-b);
+      background-blend-mode: overlay;
+      will-change: transform;
+    }
+    .grid-stars{
+      position:fixed; inset:0; z-index:-1; pointer-events:none;
+      background:
+        radial-gradient(1px 1px at 20% 30%, color-mix(in oklab, var(--fg), transparent 70%) 50%, transparent 51%),
+        radial-gradient(1px 1px at 40% 80%, color-mix(in oklab, var(--fg), transparent 80%) 50%, transparent 51%),
+        radial-gradient(1px 1px at 70% 20%, color-mix(in oklab, var(--fg), transparent 75%) 50%, transparent 51%),
+        radial-gradient(1px 1px at 85% 55%, color-mix(in oklab, var(--fg), transparent 80%) 50%, transparent 51%);
+      background-repeat: repeat; background-size: 400px 400px;
+      opacity:.35; mix-blend-mode:screen;
+      will-change: transform;
+    }
+
+    /* ====== Layout ====== */
+    .container{max-width:1200px;margin-inline:auto;padding:clamp(12px,2vw,24px)}
+    header, footer{
+      background:linear-gradient(180deg, color-mix(in oklab, var(--card), black 5%), transparent);
+      border-bottom:1px solid var(--line);
+    }
+    nav ul{list-style:none;display:flex;flex-wrap:wrap;gap:.5rem;padding:0;margin:0}
+    nav a{display:inline-block;padding:.5rem .8rem;border-radius:.6rem;text-decoration:none;color:var(--fg)}
+    nav a[aria-current="page"], nav a:hover{background:var(--card);outline:1px solid var(--line)}
+    .brand{display:flex;align-items:center;gap:.6rem}
+    .brand svg{inline-size:28px; block-size:28px}
+
+    .toolbar{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}
+    .btn{padding:.55rem .85rem;border-radius:.6rem;border:1px solid var(--line);background:var(--card);color:var(--fg);cursor:pointer}
+    .btn:focus-visible{outline:var(--ring)}
+    .pill{border-radius:999px}
+
+    .lede{color:var(--muted);max-width:70ch}
+
+    .facets{display:grid;gap:.6rem;margin:1rem 0}
+    @container (min-width: 760px){ .facets{grid-template-columns:repeat(4,minmax(0,1fr))} }
+    .facets label{display:grid;gap:.3rem;font-weight:600;color:var(--muted)}
+    .facets select,.facets input{
+      padding:.55rem .7rem;border-radius:.5rem;border:1px solid var(--line);background:var(--ink);color:var(--fg)
+    }
+
+    .cards{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+    .card{
+      background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:1rem;
+      display:grid; gap:.6rem; box-shadow:var(--shadow); transform:translateZ(0);
+    }
+    .card h3{margin:0;font-size:1.1rem}
+    .badges{display:flex;flex-wrap:wrap;gap:.35rem}
+    .b{font-size:.75rem;padding:.2rem .5rem;border-radius:.5rem;border:1px solid var(--line);color:var(--muted)}
+    .primary{justify-self:start;padding:.5rem .8rem;border-radius:.6rem;border:1px solid var(--line);background:var(--ink);color:var(--fg);text-decoration:none}
+    .primary:focus-visible{outline:var(--ring)}
+    .meta{font-size:.85rem;color:var(--muted)}
+
+    .accordion{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+    .accordion summary{cursor:pointer;padding:.8rem 1rem;background:var(--card);list-style:none}
+    .accordion summary::-webkit-details-marker{display:none}
+    .accordion .body{padding:1rem;border-top:1px solid var(--line);background:color-mix(in oklab, var(--card), black 4%)}
+
+    footer{border-top:1px solid var(--line);margin-top:2rem;padding:1rem 0;color:var(--muted)}
+
+    .sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+    /* Small visual extras */
+    .knob{inline-size:38px;block-size:22px;border-radius:999px;border:1px solid var(--line);position:relative;display:inline-block;vertical-align:middle; background:var(--ink)}
+    .knob i{position:absolute;inset:2px auto 2px 2px;inline-size:18px;block-size:18px;border-radius:50%;background:var(--fg);transition:transform .25s}
+    input[type="checkbox"]:checked + .knob i{ transform: translateX(16px) }
+
+    /* Toast */
+    .toast{position:fixed;inset:auto 16px 16px auto;background:var(--ink);color:var(--fg);border:1px solid var(--line);border-radius:.7rem;padding:.6rem .9rem;box-shadow:var(--shadow);opacity:0;pointer-events:none}
+    .toast[data-show="1"]{opacity:1;pointer-events:auto}
+
+    /* Tab bar (Mapper) */
+    .tabs{display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:.5rem}
+    .tabs button{background:var(--card)}
+    .tabs .on{outline:2px solid var(--accent)}
+
+    /* Panel / modal-ish */
+    .panel{position:fixed; inset:0 0 0 auto; width:min(980px, 92vw); background:var(--bg); border-left:1px solid var(--line);
+           box-shadow: -12px 0 28px color-mix(in oklab, black, transparent 80%); transform:translateX(100%); transition:transform .35s ease; z-index:20}
+    .panel[open]{transform:none}
+    .panel header{display:flex;justify-content:space-between;align-items:center;padding:1rem;border-bottom:1px solid var(--line)}
+    .panel main{padding:1rem;max-height:calc(100dvh - 64px);overflow:auto}
+    .panel footer{padding:1rem;border-top:1px solid var(--line);display:flex;gap:.5rem;justify-content:flex-end}
+
+    /* Mapper table */
+    table{width:100%;border-collapse:collapse}
+    th,td{border:1px solid var(--line);padding:6px;vertical-align:top;background:color-mix(in oklab, var(--card), black 2%)}
+    td input, td textarea{width:100%;background:var(--ink);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:4px}
+
+    /* High DPI tip details block */
+    details.tips summary{font-weight:600}
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- Parallax layers -->
+  <div class="parallax" aria-hidden="true"></div>
+  <div class="grid-stars" aria-hidden="true"></div>
+
+  <header>
+    <div class="container" role="navigation" aria-label="Primary">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
+        <div class="brand" aria-label="Brand">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2l3.5 6h6.5l-5.3 4.1 2 6.6L12 16l-6.7 2.7 2-6.6L2 8h6.5z"/></svg>
+          <strong>Planetary Restoration Portal</strong>
+        </div>
+        <div class="toolbar" role="toolbar" aria-label="Quick actions">
+          <button class="btn pill" id="btnMapper" aria-haspopup="dialog" aria-controls="mapperPanel">🗂️ Registry Mapper</button>
+          <button class="btn pill" id="btnTheme" title="Toggle theme"><span aria-hidden="true">🌓</span><span class="sr">Toggle theme</span></button>
+          <label class="btn pill" title="Reduce motion toggler" style="display:inline-flex;align-items:center;gap:.5rem">
+            <input id="motionToggle" type="checkbox" class="sr" aria-label="Disable animations">
+            <span>Motion</span><span class="knob"><i></i></span>
+          </label>
+        </div>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="#" aria-current="page">All</a></li>
+          <li><a href="#/missions">Missions</a></li>
+          <li><a href="#/blueprints">Blueprints</a></li>
+          <li><a href="#/tools">Tools</a></li>
+          <li><a href="#/research">Research</a></li>
+          <li><a href="#/dashboards">Dashboards</a></li>
+          <li><a href="#/governance">Governance</a></li>
+          <li><a href="#/ledger">Ledger</a></li>
+          <li><a href="#/archive">Archive</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="container">
+    <section class="intro" aria-live="polite">
+      <h1>All paths converge here</h1>
+      <p class="lede">Single-file portal. Your existing folders/pages remain where they are. This renders live cards from a local registry (editable via the built-in Mapper) and links straight to <em>your</em> paths.</p>
+
+      <form id="facetForm" class="facets" role="search" aria-label="Filter content">
+        <label>Search
+          <input id="q" name="q" type="search" placeholder="Find missions, tools, blueprints…" autocomplete="off">
+        </label>
+        <label>Domain
+          <select id="domain" name="domain"></select>
+        </label>
+        <label>Type
+          <select id="type" name="type"></select>
+        </label>
+        <label>Lifecycle
+          <select id="lifecycle" name="lifecycle"></select>
+        </label>
+        <label>Region
+          <select id="region" name="region"></select>
+        </label>
+        <div style="display:flex;gap:.5rem;align-items:end">
+          <button class="btn" id="reset">Reset</button>
+          <button class="btn" id="btnShuffle" type="button" title="Inspire me">✨ Shuffle</button>
+        </div>
+      </form>
+
+      <div id="cards" class="cards" data-enhanced="false" aria-busy="true" aria-live="polite"></div>
+
+      <details class="accordion tips">
+        <summary>Tips: offline, provenance, and graceful fallback</summary>
+        <div class="body">
+          <ul>
+            <li><strong>Offline:</strong> after first load over HTTPS, this page works offline (service worker).</li>
+            <li><strong>Mapper:</strong> paste your SFTP list and press <em>Generate</em>. Edit any row, then <em>Apply</em> to update the portal instantly.</li>
+            <li><strong>Provenance:</strong> add IPFS CIDs / Arweave TxIDs in the Tags column (e.g., <code>cid:bafy.., tx:abc123</code>).</li>
+            <li><strong>Motion:</strong> respects <code>prefers-reduced-motion</code> and the toggle in the header.</li>
+          </ul>
+        </div>
+      </details>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>Foster + Navi · Zero-Harm Override · CC BY-NC-SA + Ethical Addendum.</p>
+    </div>
+  </footer>
+
+  <!-- ====== Toast ====== -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- ====== Mapper Panel (inline, no external files) ====== -->
+  <section class="panel" id="mapperPanel" role="dialog" aria-modal="true" aria-labelledby="mapperTitle">
+    <header>
+      <h2 id="mapperTitle">Registry Mapper</h2>
+      <button class="btn" id="closeMapper" aria-label="Close mapper">✖</button>
+    </header>
+    <main>
+      <div class="tabs" role="tablist" aria-label="Mapper tabs">
+        <button class="btn on" data-tab="input" role="tab" aria-selected="true">Input</button>
+        <button class="btn" data-tab="table" role="tab" aria-selected="false">Table</button>
+        <button class="btn" data-tab="json" role="tab" aria-selected="false">JSON</button>
+        <button class="btn" data-tab="rules" role="tab" aria-selected="false">Rules</button>
+      </div>
+
+      <!-- Input -->
+      <section data-pane="input" role="tabpanel">
+        <p class="meta">Paste SFTP URLs (one per line). Click <em>Generate</em>. You can include items exactly like you posted.</p>
+        <textarea id="src" placeholder="sftp://a138911@access-5018300558.webspace-host.com/openstay"></textarea>
+        <div style="display:flex;gap:.5rem;margin-top:.5rem;flex-wrap:wrap">
+          <button class="btn" id="generate">Generate</button>
+          <button class="btn" id="quickDemo">Demo from sample</button>
+          <button class="btn" id="clearInput">Clear</button>
+        </div>
+      </section>
+
+      <!-- Table -->
+      <section data-pane="table" hidden role="tabpanel" aria-label="Editable table">
+        <div id="tableWrap" style="overflow:auto"></div>
+      </section>
+
+      <!-- JSON -->
+      <section data-pane="json" hidden role="tabpanel">
+        <textarea id="jsonOut" aria-label="registry.json output" style="width:100%;height:40vh"></textarea>
+      </section>
+
+      <!-- Rules -->
+      <section data-pane="rules" hidden role="tabpanel">
+        <p class="meta">Simple substring rules (leftmost match wins). Edit here and they apply instantly.</p>
+        <textarea id="rules" style="width:100%;height:40vh"></textarea>
+      </section>
+    </main>
+    <footer>
+      <button class="btn" id="applyPortal">Apply to portal</button>
+      <button class="btn" id="downloadJson">Download JSON</button>
+      <button class="btn" id="saveLocal">Save rules</button>
+    </footer>
+  </section>
+
+  <!-- ====== Initial Registry / Rules (inline JSON) ====== -->
+  <script id="registry-data" type="application/json">
+  {
+    "items": [
+      {
+        "id":"start-here","title":"Start Here","slug":"start-here",
+        "category":"blueprints","domain":"Open Infrastructure","type":"Gateway",
+        "lifecycle":"Deployed","region":"Global","tags":["landing"],
+        "href":"/start-here","summary":"Orientation for new allies and funders."
+      },
+      {
+        "id":"planetary-restoration-archive","title":"Planetary Restoration Archive","slug":"planetary-restoration-archive",
+        "category":"dashboards","domain":"AI/Orchestration","type":"System",
+        "lifecycle":"Prototype","region":"Global","tags":["PRA","dashboard"],
+        "href":"/planetary-restoration-archive","summary":"The master ledger of missions, proofs, and blueprints."
+      },
+      {
+        "id":"lightforge","title":"Lightforge","slug":"lightforge",
+        "category":"tools","domain":"Health","type":"Tool (Software)",
+        "lifecycle":"Prototype","region":"Global","tags":["gamified","offline"],
+        "href":"/lightforge","summary":"Gamified sobriety and emotional transformation."
+      },
+      {
+        "id":"impacttracker","title":"Impact Tracker","slug":"impacttracker",
+        "category":"dashboards","domain":"Open Infrastructure","type":"Dashboard",
+        "lifecycle":"Prototype","region":"Global","tags":["metrics"],
+        "href":"/impacttracker","summary":"Real-time missions & peace ripple metrics."
+      }
+    ]
+  }
+  </script>
+
+  <script id="rules-data" type="application/json">
+  {
+    "rules": [
+      { "match": ["ashenbloom","peaceripple","fortmacorchard","fortmcmurraywildcall","fieldkit","hostanode","missionfuelfunders"],
+        "category": "missions", "domain": "Ecology", "type": "Mission", "lifecycle": "Field Test" },
+
+      { "match": ["lightforge","aistreamcoach","gamification-engine-standalone","opengamifyedu","openstay","openstore","ddd","dgn","deploy","ddd-deployer","impacttracker","dashboard","leaderboards","trf-gpt-dashboard"],
+        "category": "tools", "domain": "Open Infrastructure", "type": "Tool (Software)", "lifecycle": "Prototype" },
+
+      { "match": ["vortexpulse","phasedrive","spiralliftpod","stratoweave","aetherion","lumatideoceanrings","nullisprismnexus","romarineconcrete","geoecologicalresonantengineering"],
+        "category": "research", "domain": "Energy/Transport", "type": "Research", "lifecycle": "Concept" },
+
+      { "match": ["licensing","guardiantrustmodel","conditional-immutable-storage","stateofaffairspublicnotice","truthreport","globalsymbioteledger","globalnotarization","contracts","donorintentrouter","donor-intent-router"],
+        "category": "governance", "domain": "Governance", "type": "Policy/License", "lifecycle": "Deployed" },
+
+      { "match": ["proof","proofkit","proof-of-possibility","safe_archiving_method"],
+        "category": "ledger", "domain": "Ledger", "type": "Proof/Notarization", "lifecycle": "Deployed" },
+
+      { "match": ["education","education2","honorlearningcodex","intergenerationalwisdommovement","regenerative_education_research_paper1","academy"],
+        "category": "blueprints", "domain": "Education", "type": "Blueprint", "lifecycle": "Prototype" },
+
+      { "match": ["ecobreathpurifier","ecocoolshingles","ecowaveshowerhead","thermaleaf-panels","hydromossmat","symfungi-shield","myco","mycelial","postfiresoilrebuilder","particulateremovalskies","passivewindtowaterharvester","solarweavecanopy","skyharvestlantern","offgridpower","offgridpowermesh"],
+        "category": "blueprints", "domain": "Ecology/Energy", "type": "Blueprint", "lifecycle": "Prototype" },
+
+      { "match": ["planetary-restoration-archive","planetary-restoration-os","projectcoherence","symbioteone-orchestrator","symbioteorchestratorrequest","herolens","herolens2","sentinelarc","galaxy","futurescape","trf-gpt-dashboard"],
+        "category": "dashboards", "domain": "AI/Orchestration", "type": "System", "lifecycle": "Prototype" },
+
+      { "match": ["narrativereframing","mythbridge","the-untold-zero","the-paradox-seed","the-non-return-point","veiltext","originsingularityforge","forgivenessispower","sunset","trolls"],
+        "category": "archive", "domain": "Narrative", "type": "Story/Essay", "lifecycle": "Archived" }
+    ]
+  }
+  </script>
+
+  <!-- ====== App Logic (no external JS) ====== -->
+  <script>
+  (()=>{
+
+    // ---- Prefs / State ----
+    const LS_REGISTRY = 'pra.registry';
+    const LS_RULES    = 'pra.rules';
+    const LS_MOTION   = 'pra.motion';
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // ---- Manifest (inline Blob) ----
+    const manifest = {
+      name: "Planetary Restoration Portal",
+      short_name: "PRA Portal",
+      start_url: "/index.html",
+      display: "standalone",
+      background_color: getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || "#0b1b17",
+      theme_color: "#0b1b17",
+      icons: []
+    };
+    const manURL = URL.createObjectURL(new Blob([JSON.stringify(manifest)], {type:'application/json'}));
+    document.getElementById('app-manifest').href = manURL;
+
+    // ---- Service worker (inline) ----
+    const swCode = `
+      const CACHE='pra-onefile-v1';
+      const ASSETS=['/','/index.html'];
+      self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting()))});
+      self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))) )});
+      self.addEventListener('fetch',e=>{
+        e.respondWith(
+          caches.match(e.request).then(hit=> hit || fetch(e.request).then(resp=>{
+            const copy=resp.clone(); caches.open(CACHE).then(c=>c.put(e.request,copy)); return resp;
+          }).catch(()=> caches.match('/index.html')))
+        );
+      });
+    `;
+    if('serviceWorker' in navigator){
+      try{
+        const swURL = URL.createObjectURL(new Blob([swCode], {type:'text/javascript'}));
+        navigator.serviceWorker.register(swURL);
+      }catch(e){}
+    }
+
+    // ---- Utilities ----
+    const $ = (sel, root=document)=> root.querySelector(sel);
+    const $$ = (sel, root=document)=> [...root.querySelectorAll(sel)];
+    const toast = (msg, ms=2200)=>{ const t=$('#toast'); t.textContent=msg; t.dataset.show=1; setTimeout(()=>{t.dataset.show=0}, ms); };
+
+    function getJSON(id){ return JSON.parse($(id).textContent); }
+    const defaultRegistry = (()=> {
+      try{
+        const fromLS = localStorage.getItem(LS_REGISTRY);
+        return fromLS ? JSON.parse(fromLS) : getJSON('#registry-data');
+      }catch{ return getJSON('#registry-data'); }
+    })();
+    const rulesState = (()=> {
+      try{
+        const fromLS = localStorage.getItem(LS_RULES);
+        return fromLS ? JSON.parse(fromLS) : getJSON('#rules-data');
+      }catch{ return getJSON('#rules-data'); }
+    })();
+
+    // ---- Motion toggle ----
+    const motionToggle = $('#motionToggle');
+    if(localStorage.getItem(LS_MOTION)==='off' || prefersReduced){ motionToggle.checked = true; document.body.dataset.nomotion = 1; }
+    motionToggle.addEventListener('change', ()=>{
+      if(motionToggle.checked){ localStorage.setItem(LS_MOTION,'off'); document.body.dataset.nomotion = 1; toast('Animations disabled'); }
+      else { localStorage.removeItem(LS_MOTION); delete document.body.dataset.nomotion; toast('Animations enabled'); }
+    });
+
+    // ---- Theme toggle ----
+    $('#btnTheme').addEventListener('click', ()=>{
+      const isLight = document.documentElement.getAttribute('data-theme')==='solar-light';
+      document.documentElement.setAttribute('data-theme', isLight ? 'solar' : 'solar-light');
+    });
+
+    // ---- Parallax (cheap & safe) ----
+    const parallaxA = $('.parallax'), parallaxB = $('.grid-stars');
+    const parallaxTick = ()=>{
+      if(document.body.dataset.nomotion) return;
+      const y = window.scrollY || 0;
+      parallaxA.style.transform = `translateY(${y*0.08}px)`;
+      parallaxB.style.transform = `translateY(${y*0.18}px)`;
+    };
+    window.addEventListener('scroll', parallaxTick, {passive:true});
+
+    // ---- Registry filtering & render ----
+    const state = { all: defaultRegistry.items||[], filtered: [] };
+    const form = $('#facetForm');
+    const cardsEl = $('#cards');
+
+    const FACETS = {
+      uniq: arr => [...new Set(arr)].filter(Boolean).sort(),
+      seed: (items)=>{
+        const setOpts = (sel, vals)=>{ const el = $(sel, form); el.replaceChildren(new Option('All','')); vals.forEach(v=> el.appendChild(new Option(v,v))); };
+        setOpts('#domain',   FACETS.uniq(items.map(i=>i.domain)));
+        setOpts('#type',     FACETS.uniq(items.map(i=>i.type)));
+        setOpts('#lifecycle',FACETS.uniq(items.map(i=>i.lifecycle)));
+        setOpts('#region',   FACETS.uniq(items.map(i=>(i.region||'').split('/')[0])));
+      }
+    };
+
+    function applyFilters(){
+      const q = ($('#q').value||'').toLowerCase().trim();
+      const f = {
+        domain: $('#domain').value,
+        type: $('#type').value,
+        lifecycle: $('#lifecycle').value,
+        region: $('#region').value
+      };
+      state.filtered = state.all.filter(it=>{
+        const hay = [it.title,it.summary,(it.tags||[]).join(' ')].join(' ').toLowerCase();
+        const qok = !q || hay.includes(q);
+        const dok = !f.domain   || it.domain===f.domain;
+        const tok = !f.type     || it.type===f.type;
+        const lok = !f.lifecycle|| it.lifecycle===f.lifecycle;
+        const rok = !f.region   || (it.region||'').startsWith(f.region);
+        return qok && dok && tok && lok && rok;
+      });
+      renderCards();
+    }
+
+    function renderCards(){
+      cardsEl.setAttribute('aria-busy','true');
+      const frag = document.createDocumentFragment();
+      state.filtered.forEach(it=>{
+        const a = document.createElement('article');
+        a.className='card';
+        const href = it.href || ('/'+it.slug);
+        a.innerHTML = `
+          <h3>${it.title}</h3>
+          <p>${it.summary||''}</p>
+          <div class="badges">
+            ${[it.domain,it.type,it.lifecycle,it.region].filter(Boolean).map(v=>`<span class="b">${v}</span>`).join('')}
+            ${(it.tags||[]).map(t=>`<span class="b">${t}</span>`).join('')}
+          </div>
+          <a class="primary" href="${href}" rel="noopener">Open</a>
+        `;
+        if(!document.body.dataset.nomotion && a.animate){
+          a.animate([{transform:'translateY(8px)',opacity:.0},{transform:'translateY(0)',opacity:1}],{duration:300, easing:'cubic-bezier(.2,.8,.2,1)'});
+        }
+        frag.appendChild(a);
+      });
+      const commit = ()=>{ cardsEl.replaceChildren(frag); cardsEl.removeAttribute('aria-busy'); };
+      if(document.startViewTransition && !document.body.dataset.nomotion){ document.startViewTransition(commit); } else commit();
+    }
+
+    // Wire filter events
+    ['input','change'].forEach(evt=> form.addEventListener(evt, e=>{ if(e.target.matches('input,select')) applyFilters(); }));
+    $('#reset').addEventListener('click', e=>{ e.preventDefault(); form.reset(); applyFilters(); });
+    $('#btnShuffle').addEventListener('click', ()=>{
+      state.filtered.sort(()=>Math.random()-.5);
+      renderCards();
+    });
+
+    function bootstrap(){
+      FACETS.seed(state.all);
+      state.filtered = state.all.slice();
+      renderCards();
+      parallaxTick();
+    }
+    bootstrap();
+
+    // ---- Mapper tools ----
+    const mapper = $('#mapperPanel');
+    $('#btnMapper').addEventListener('click', ()=> mapper.setAttribute('open',''));
+    $('#closeMapper').addEventListener('click', ()=> mapper.removeAttribute('open'));
+
+    // Tab logic
+    $$('.tabs button', mapper).forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        $$('.tabs button', mapper).forEach(b=> b.classList.remove('on'));
+        btn.classList.add('on');
+        const tab = btn.dataset.tab;
+        $$('[data-pane]', mapper).forEach(p=> p.hidden = (p.getAttribute('data-pane')!==tab));
+      });
+    });
+
+    const defaults = { lifecycle: 'Prototype', region: 'Global' };
+    function slugify(s){ return s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,''); }
+    function titleCase(s){ return s.replace(/[-_]+/g,' ').replace(/\b\w/g, m=>m.toUpperCase()); }
+    function inferFromRules(name, rules){
+      for(const r of rules){
+        if((r.match||[]).some(m=> name.includes(m))){
+          return { category:r.category, domain:r.domain, type:r.type, lifecycle:r.lifecycle||defaults.lifecycle };
+        }
+      }
+      return { category:'archive', domain:'Open Infrastructure', type:'Page', lifecycle:defaults.lifecycle };
+    }
+    function sftpToHref(url){
+      try{
+        const u = new URL(url);
+        const path = u.pathname.replace(/^\//,'');
+        return '/'+path; // map to site-relative HTTP path
+      }catch{ return '#'; }
+    }
+
+    const rulesBox = $('#rules');
+    rulesBox.value = JSON.stringify(rulesState, null, 2);
+
+    function buildTable(items){
+      const wrap = $('#tableWrap'); const tbl = document.createElement('table');
+      tbl.innerHTML = `<thead>
+        <tr><th>Title</th><th>Slug</th><th>Category</th><th>Domain</th><th>Type</th><th>Lifecycle</th><th>Region</th><th>Href</th><th>Tags</th><th>Summary</th></tr>
+      </thead><tbody></tbody>`;
+      const tb = tbl.querySelector('tbody');
+      items.forEach(it=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><input value="${it.title}"></td>
+          <td><input value="${it.slug}"></td>
+          <td><input value="${it.category}"></td>
+          <td><input value="${it.domain}"></td>
+          <td><input value="${it.type}"></td>
+          <td><input value="${it.lifecycle}"></td>
+          <td><input value="${it.region}"></td>
+          <td><input value="${it.href}"></td>
+          <td><input value="${(it.tags||[]).join(',')}"></td>
+          <td><textarea>${it.summary||''}</textarea></td>
+        `;
+        tb.appendChild(tr);
+      });
+      wrap.replaceChildren(tbl);
+      $('.tabs [data-tab="table"]').click();
+    }
+
+    function tableToItems(){
+      return [...$('#tableWrap tbody').children].map(tr=>{
+        const inputs = tr.querySelectorAll('input,textarea');
+        const [title, slug, category, domain, type, lifecycle, region, href, tags, summary] = [...inputs].map(i=>i.value.trim());
+        return { id: slug||slugify(title), title, slug: slug||slugify(title), category, domain, type, lifecycle, region,
+                 href, tags: (tags||'').split(',').map(t=>t.trim()).filter(Boolean), summary };
+      });
+    }
+
+    $('#generate').addEventListener('click', ()=>{
+      const text = $('#src').value.trim();
+      const rules = JSON.parse(rulesBox.value||'{"rules":[]}').rules || [];
+      const lines = text.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+      const items = lines.map(line=>{
+        const href = sftpToHref(line);
+        const seg = href.split('/').filter(Boolean).pop() || 'index';
+        const name = seg.toLowerCase();
+        const guess = inferFromRules(name, rules);
+        return {
+          id: name, slug: name, title: titleCase(name), href,
+          category: guess.category, domain: guess.domain, type: guess.type,
+          lifecycle: guess.lifecycle, region: defaults.region, tags:[]
+        };
+      });
+      $('#jsonOut').value = JSON.stringify({items}, null, 2);
+      buildTable(items);
+      toast('Generated mapping');
+    });
+
+    $('#quickDemo').addEventListener('click', ()=>{
+      $('#src').value = [
+        "sftp://a138911@access-5018300558.webspace-host.com/openstay",
+        "sftp://a138911@access-5018300558.webspace-host.com/openstore",
+        "sftp://a138911@access-5018300558.webspace-host.com/lightforge",
+        "sftp://a138911@access-5018300558.webspace-host.com/planetary-restoration-archive",
+        "sftp://a138911@access-5018300558.webspace-host.com/impacttracker",
+        "sftp://a138911@access-5018300558.webspace-host.com/ashalertapp",
+        "sftp://a138911@access-5018300558.webspace-host.com/geoecologicalresonantengineering",
+        "sftp://a138911@access-5018300558.webspace-host.com/truthreport",
+        "sftp://a138911@access-5018300558.webspace-host.com/proofkit"
+      ].join("\n");
+      toast('Sample input loaded');
+    });
+    $('#clearInput').addEventListener('click', ()=> { $('#src').value=''; });
+
+    $('#downloadJson').addEventListener('click', ()=>{
+      const out = $('#jsonOut').value.trim() || JSON.stringify({items: tableToItems()}, null, 2);
+      const blob = new Blob([out], {type:'application/json'});
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'registry.json'; a.click();
+      URL.revokeObjectURL(a.href);
+    });
+
+    $('#applyPortal').addEventListener('click', ()=>{
+      const items = $('#tableWrap tbody')?.children.length ? tableToItems() : (JSON.parse($('#jsonOut').value||'{"items":[]}').items||[]);
+      if(!items.length){ toast('Nothing to apply'); return; }
+      state.all = items;
+      localStorage.setItem(LS_REGISTRY, JSON.stringify({items}));
+      FACETS.seed(state.all); state.filtered = items.slice(); renderCards();
+      toast('Applied to portal (saved locally)');
+    });
+
+    $('#saveLocal').addEventListener('click', ()=>{
+      try{
+        const rules = JSON.parse($('#rules').value||'{}');
+        localStorage.setItem(LS_RULES, JSON.stringify(rules));
+        toast('Rules saved');
+      }catch{ toast('Invalid JSON in rules'); }
+    });
+
+    // Keep JSON pane synced with table edits
+    const syncJSON = ()=> {
+      if(!$('#tableWrap tbody')) return;
+      const items = tableToItems();
+      $('#jsonOut').value = JSON.stringify({items}, null, 2);
+    };
+    $('#tableWrap').addEventListener('input', syncJSON);
+
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Provenance: Planetary Restoration Archive | planetaryrestorationarchive.com -->
+<!-- GitHub: github.com/therickyfoster | Steward: Foster + Navi -->
+<!-- integrity: computed on load -->
+<!-- Zero-Harm Intent: This tool is designed for planetary regeneration, education, and collaborative stewardship. -->
+<!-- Anti-Inversion: Not for weaponization, extraction, surveillance, or harm to people/biosphere/sovereignty. -->
+<!-- License: Respects all upstream licenses. See Attributions section. -->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Foster + Navi · Planetary Restoration Archive">
+<meta name="description" content="The definitive open-source archive of restoration technologies, decentralized AI systems, and ecological healing protocols - a living planetary operating system.">
+<meta name="keywords" content="planetary restoration, regeneration, ecological healing, decentralized AI, mycorrhizal networks, atmospheric restoration">
+<meta name="theme-color" content="#1a4d2e">
+<link rel="me" href="https://planetaryrestorationarchive.com">
+<link rel="me" href="https://github.com/TheRickyFoster">
+<link rel="manifest" id="manifest-placeholder">
+
+<title>Planetary Restoration Archive | Living Blueprint for Regeneration</title>
+
+<style>
+/* === RESET & BASE === */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* Light theme */
+  --bg-primary: #f5f7f5;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #e8f4ea;
+  --text-primary: #1a1a1a;
+  --text-secondary: #4a5568;
+  --text-muted: #718096;
+  --accent-primary: #2d8659;
+  --accent-secondary: #1a4d2e;
+  --accent-tertiary: #4fd1c5;
+  --border-color: #d1ddd1;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+  --transition-speed: 0.3s;
+  --warning: #d97706;
+  --success: #059669;
+  --info: #0ea5e9;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-primary: #0f1419;
+    --bg-secondary: #1a1f26;
+    --bg-tertiary: #1e2933;
+    --text-primary: #e8f4ea;
+    --text-secondary: #b8c5b8;
+    --text-muted: #8a9a8a;
+    --accent-primary: #4fd1c5;
+    --accent-secondary: #2d8659;
+    --accent-tertiary: #38b2ac;
+    --border-color: #2d3748;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.3);
+    --shadow-lg: 0 10px 15px rgba(0,0,0,0.4);
+  }
+}
+
+[data-theme="light"] {
+  --bg-primary: #f5f7f5;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #e8f4ea;
+  --text-primary: #1a1a1a;
+  --text-secondary: #4a5568;
+  --text-muted: #718096;
+  --accent-primary: #2d8659;
+  --accent-secondary: #1a4d2e;
+  --accent-tertiary: #4fd1c5;
+  --border-color: #d1ddd1;
+}
+
+[data-theme="dark"] {
+  --bg-primary: #0f1419;
+  --bg-secondary: #1a1f26;
+  --bg-tertiary: #1e2933;
+  --text-primary: #e8f4ea;
+  --text-secondary: #b8c5b8;
+  --text-muted: #8a9a8a;
+  --accent-primary: #4fd1c5;
+  --accent-secondary: #2d8659;
+  --accent-tertiary: #38b2ac;
+  --border-color: #2d3748;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.6;
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+  transition: background-color var(--transition-speed), color var(--transition-speed);
+}
+
+/* === SKIP LINK === */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--accent-primary);
+  color: white;
+  padding: 8px;
+  text-decoration: none;
+  z-index: 100;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* === HEADER === */
+header {
+  background: linear-gradient(135deg, var(--accent-secondary) 0%, var(--accent-primary) 100%);
+  color: white;
+  padding: 1rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: var(--shadow-md);
+}
+
+.header-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-decoration: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.logo-icon {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.05); }
+}
+
+nav {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  transition: opacity var(--transition-speed);
+  padding: 0.5rem;
+}
+
+nav a:hover, nav a:focus {
+  opacity: 0.8;
+  outline: 2px solid white;
+  outline-offset: 2px;
+}
+
+.controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+button {
+  background: rgba(255,255,255,0.2);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.3);
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all var(--transition-speed);
+}
+
+button:hover, button:focus {
+  background: rgba(255,255,255,0.3);
+  transform: translateY(-2px);
+  outline: 2px solid white;
+  outline-offset: 2px;
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+/* === MAIN CONTENT === */
+main {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* === HERO SECTION === */
+.hero {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
+  border-radius: 12px;
+  margin-bottom: 3rem;
+  box-shadow: var(--shadow-lg);
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero h1 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-tertiary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% { filter: hue-rotate(0deg); }
+  50% { filter: hue-rotate(15deg); }
+}
+
+.hero p {
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+  max-width: 800px;
+  margin: 0 auto 2rem;
+}
+
+.tagline {
+  font-size: 1rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* === SEARCH === */
+.search-container {
+  margin: 2rem auto;
+  max-width: 600px;
+}
+
+.search-wrapper {
+  position: relative;
+}
+
+#searchInput {
+  width: 100%;
+  padding: 1rem 1rem 1rem 3rem;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 1rem;
+  transition: all var(--transition-speed);
+}
+
+#searchInput:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(45, 134, 89, 0.1);
+}
+
+.search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+/* === SECTION STYLES === */
+section {
+  margin-bottom: 3rem;
+  animation: fadeInUp 0.6s ease-out;
+  animation-fill-mode: both;
+}
+
+section:nth-child(2) { animation-delay: 0.1s; }
+section:nth-child(3) { animation-delay: 0.2s; }
+section:nth-child(4) { animation-delay: 0.3s; }
+
+.section-header {
+  background: var(--bg-secondary);
+  padding: 1.5rem;
+  border-radius: 8px 8px 0 0;
+  border: 2px solid var(--border-color);
+  border-bottom: none;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all var(--transition-speed);
+}
+
+.section-header:hover {
+  background: var(--bg-tertiary);
+}
+
+.section-header:focus {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: -2px;
+}
+
+.section-header h2 {
+  font-size: 1.75rem;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.section-icon {
+  font-size: 1.5rem;
+}
+
+.collapse-icon {
+  font-size: 1.5rem;
+  transition: transform var(--transition-speed);
+  color: var(--accent-primary);
+}
+
+.section-header[aria-expanded="false"] .collapse-icon {
+  transform: rotate(-90deg);
+}
+
+.section-content {
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-color);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  padding: 2rem;
+  overflow: hidden;
+  max-height: 5000px;
+  transition: max-height 0.5s ease-in-out, opacity 0.3s ease-in-out, padding 0.3s ease-in-out;
+}
+
+.section-content.collapsed {
+  max-height: 0;
+  opacity: 0;
+  padding: 0 2rem;
+}
+
+/* === ALERT BOX === */
+.alert-box {
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  border-left: 4px solid;
+  animation: slideInLeft 0.4s ease-out;
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.alert-warning {
+  background: rgba(217, 119, 6, 0.1);
+  border-color: var(--warning);
+  color: var(--text-primary);
+}
+
+.alert-success {
+  background: rgba(5, 150, 105, 0.1);
+  border-color: var(--success);
+}
+
+.alert-info {
+  background: rgba(14, 165, 233, 0.1);
+  border-color: var(--info);
+}
+
+.alert-box strong {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+.alert-box ul {
+  margin-left: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.alert-box li {
+  margin-bottom: 0.5rem;
+}
+
+/* === PROJECT CARDS === */
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.project-card {
+  background: var(--bg-tertiary);
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1.5rem;
+  transition: all var(--transition-speed);
+  animation: scaleIn 0.4s ease-out;
+  animation-fill-mode: both;
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.project-card:nth-child(1) { animation-delay: 0.05s; }
+.project-card:nth-child(2) { animation-delay: 0.1s; }
+.project-card:nth-child(3) { animation-delay: 0.15s; }
+.project-card:nth-child(4) { animation-delay: 0.2s; }
+.project-card:nth-child(5) { animation-delay: 0.25s; }
+.project-card:nth-child(6) { animation-delay: 0.3s; }
+
+.project-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--accent-primary);
+}
+
+.project-card:focus-within {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+.project-code {
+  display: inline-block;
+  background: var(--accent-primary);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.project-card h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+  color: var(--text-primary);
+}
+
+.project-card p {
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+}
+
+.project-impact {
+  font-size: 0.875rem;
+  color: var(--accent-primary);
+  font-weight: 600;
+}
+
+/* === FEATURE LIST === */
+.feature-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.feature-item {
+  background: var(--bg-tertiary);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 2px solid var(--border-color);
+  transition: all var(--transition-speed);
+}
+
+.feature-item:hover {
+  border-color: var(--accent-primary);
+  transform: translateX(4px);
+}
+
+.feature-item h3 {
+  color: var(--accent-primary);
+  margin-bottom: 0.75rem;
+  font-size: 1.1rem;
+}
+
+.feature-item p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+/* === CONTRIBUTION PATHWAYS === */
+.pathway-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.pathway-card {
+  background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
+  padding: 2rem;
+  border-radius: 12px;
+  border: 2px solid var(--border-color);
+  text-align: center;
+  transition: all var(--transition-speed);
+}
+
+.pathway-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--accent-primary);
+}
+
+.pathway-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.pathway-card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: var(--accent-primary);
+}
+
+.pathway-card p {
+  color: var(--text-secondary);
+}
+
+/* === BUILD NOTES PANEL === */
+.build-notes {
+  background: var(--bg-tertiary);
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-top: 3rem;
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+}
+
+.build-notes h3 {
+  color: var(--accent-primary);
+  margin-bottom: 1rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.build-notes dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.5rem 1rem;
+}
+
+.build-notes dt {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.build-notes dd {
+  color: var(--text-primary);
+  word-break: break-all;
+}
+
+/* === FOOTER === */
+footer {
+  background: var(--bg-secondary);
+  border-top: 2px solid var(--border-color);
+  padding: 3rem 2rem 2rem;
+  margin-top: 4rem;
+}
+
+.footer-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.footer-section h4 {
+  color: var(--accent-primary);
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.footer-section ul {
+  list-style: none;
+}
+
+.footer-section li {
+  margin-bottom: 0.5rem;
+}
+
+.footer-section a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color var(--transition-speed);
+}
+
+.footer-section a:hover, .footer-section a:focus {
+  color: var(--accent-primary);
+  text-decoration: underline;
+}
+
+.footer-bottom {
+  text-align: center;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border-color);
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  nav {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .hero {
+    padding: 2rem 1rem;
+  }
+  
+  main {
+    padding: 1rem;
+  }
+  
+  .project-grid,
+  .feature-list,
+  .pathway-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* === PRINT STYLES === */
+@media print {
+  header, .controls, .search-container, button {
+    display: none;
+  }
+  
+  .section-content {
+    max-height: none !important;
+    opacity: 1 !important;
+    padding: 2rem !important;
+  }
+  
+  .section-header {
+    cursor: default;
+  }
+  
+  .collapse-icon {
+    display: none;
+  }
+  
+  body {
+    background: white;
+    color: black;
+  }
+  
+  .project-card,
+  .feature-item,
+  .pathway-card {
+    break-inside: avoid;
+  }
+}
+
+/* === NOSCRIPT === */
+.noscript-warning {
+  background: var(--warning);
+  color: white;
+  padding: 1rem;
+  text-align: center;
+  font-weight: 600;
+}
+</style>
+</head>
+<body>
+<noscript>
+  <div class="noscript-warning">
+    ⚠️ JavaScript is disabled. Some interactive features will be limited. Core content remains accessible.
+  </div>
+</noscript>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<header role="banner">
+  <div class="header-content">
+    <a href="#" class="logo">
+      <span class="logo-icon" aria-hidden="true">🌍</span>
+      <span>Planetary Restoration Archive</span>
+    </a>
+    <nav role="navigation" aria-label="Main navigation">
+      <a href="#projects">Projects</a>
+      <a href="#technologies">Technologies</a>
+      <a href="#deployment">Deployment</a>
+      <a href="#philosophy">Philosophy</a>
+      <a href="#contribute">Contribute</a>
+    </nav>
+    <div class="controls">
+      <button id="themeToggle" aria-label="Toggle theme">
+        <span id="themeIcon">🌙</span>
+      </button>
+      <button id="exportHTML" aria-label="Export as HTML">💾 HTML</button>
+      <button id="exportJSON" aria-label="Export as JSON">📦 JSON</button>
+    </div>
+  </div>
+</header>
+
+<main id="main-content" role="main">
+  <div class="hero">
+    <h1>A Living Blueprint for Planetary Regeneration</h1>
+    <p>The definitive open-source archive of restoration technologies, decentralized AI systems, and ecological healing protocols.</p>
+    <p class="tagline">More than data — an emergent planetary operating system where every innovation is a seed, every deployment a sanctuary, and every contributor a guardian of Earth's renaissance.</p>
+  </div>
+
+  <div class="search-container">
+    <div class="search-wrapper">
+      <span class="search-icon" aria-hidden="true">🔍</span>
+      <input 
+        type="search" 
+        id="searchInput" 
+        placeholder="Search projects, technologies, protocols..." 
+        aria-label="Search content"
+      >
+    </div>
+  </div>
+
+  <section id="projects">
+    <div class="section-header" role="button" tabindex="0" aria-expanded="true" aria-controls="projects-content">
+      <h2>
+        <span class="section-icon" aria-hidden="true">📊</span>
+        Active Projects & Strategic Focus
+      </h2>
+      <span class="collapse-icon" aria-hidden="true">▼</span>
+    </div>
+    <div class="section-content" id="projects-content">
+      <div class="alert-box alert-warning">
+        <strong>Key Insights & Recommendations</strong>
+        <ul>
+          <li><strong>Urgent:</strong> Complete video showcase for education repository to enhance visibility and funding opportunities.</li>
+          <li><strong>Opportunity:</strong> Expand collaboration platform to include conflict-resolution protocols.</li>
+          <li><strong>Action Needed:</strong> Finalize Fiverr profile optimization to scale services effectively.</li>
+        </ul>
+      </div>
+      
+      <div class="alert-box alert-success">
+        <strong>Strategic Focus</strong>
+        <p>Education-through-action shows high potential for conflict reduction via collaborative problem-solving frameworks.</p>
+      </div>
+
+      <div class="project-grid">
+        <div class="project-card">
+          <span class="project-code">EDU-001</span>
+          <h3>Education Framework Development</h3>
+          <p>AI-guided systems connecting enterprise, government, and communities where students learn by solving real restoration challenges.</p>
+          <p class="project-impact">Impact: Global education transformation</p>
+        </div>
+
+        <div class="project-card">
+          <span class="project-code">RESTO-001</span>
+          <h3>Planetary Restoration Archive</h3>
+          <p>Comprehensive repository with frameworks for ecosystem repair and resilience building.</p>
+          <p class="project-impact">Impact: Environmental recovery at scale</p>
+        </div>
+
+        <div class="project-card">
+          <span class="project-code">TECH-001</span>
+          <h3>Multi-Sector Collaboration Platform</h3>
+          <p>AI-powered networks linking society's actors for conflict prevention and collaborative governance.</p>
+          <p class="project-impact">Next: Technical architecture finalization</p>
+        </div>
+
+        <div class="project-card">
+          <span class="project-code">MEDIA-001</span>
+          <h3>Repository Showcase Videos</h3>
+          <p>Professional MP4 content optimized for web delivery (target under 50MB). Tools: Synthesia, Runway ML, Pika Labs.</p>
+          <p class="project-impact">Impact: Enhanced visibility and engagement</p>
+        </div>
+
+        <div class="project-card">
+          <span class="project-code">BIZ-001</span>
+          <h3>Professional Service Platform</h3>
+          <p>Fiverr optimization strategy to scale open-source services and sustainable funding models.</p>
+          <p class="project-impact">Impact: Sustainable operations</p>
+        </div>
+
+        <div class="project-card">
+          <span class="project-code">MYCO-001</span>
+          <h3>Mycorrhizal Network Integration</h3>
+          <p>Biomimetic collaboration systems inspired by fungal networks for resilience and peace-building.</p>
+          <p class="project-impact">Impact: Distributed intelligence frameworks</p>
+        </div>
+
+        <div class="project-card">
+          <span class="project-code">ATMO-001</span>
+          <h3>Atmospheric Restoration Systems</h3>
+          <p>Carbon capture and weather stabilization protocols with planetary scope deployment.</p>
+          <p class="project-impact">Impact: Climate stabilization</p>
+        </div>
+
+        <div class="project-card">
+          <span class="project-code">BIO-001</span>
+          <h3>Bioregional Education Networks</h3>
+          <p>Place-based learning frameworks integrating Indigenous knowledge and ecological wisdom.</p>
+          <p class="project-impact">Impact: Cultural-ecological renewal</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="technologies">
+    <div class="section-header" role="button" tabindex="0" aria-expanded="true" aria-controls="technologies-content">
+      <h2>
+        <span class="section-icon" aria-hidden="true">🔬</span>
+        Core Technologies & Innovation
+      </h2>
+      <span class="collapse-icon" aria-hidden="true">▼</span>
+    </div>
+    <div class="section-content" id="technologies-content">
+      <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Breakthrough technologies for atmospheric restoration, soil regeneration, water purification, and symbiotic AI systems.</p>
+      
+      <div class="feature-list">
+        <div class="feature-item">
+          <h3>🧬 Advanced Biotechnology</h3>
+          <p>CRISPR-enhanced mycorrhizae, atmospheric processors, and carbon-sequestering organism blueprints for rapid ecosystem restoration.</p>
+        </div>
+
+        <div class="feature-item">
+          <h3>🤖 Decentralized AI Systems</h3>
+          <p>Self-organizing agent networks for climate monitoring, resource optimization, and autonomous restoration deployment coordination.</p>
+        </div>
+
+        <div class="feature-item">
+          <h3>⚡ Post-Carbon Energy</h3>
+          <p>Fusion reactors, atmospheric energy harvesting, and distributed power systems for post-carbon civilization infrastructure.</p>
+        </div>
+
+        <div class="feature-item">
+          <h3>💧 Water Purification Systems</h3>
+          <p>Advanced filtration, desalination, and atmospheric water harvesting technologies for water security.</p>
+        </div>
+
+        <div class="feature-item">
+          <h3>🌱 Soil Regeneration Protocols</h3>
+          <p>Microbial inoculation, biochar integration, and permaculture frameworks for rebuilding soil health.</p>
+        </div>
+
+        <div class="feature-item">
+          <h3>🌡️ Climate Monitoring Networks</h3>
+          <p>Distributed sensor arrays and real-time data integration for planetary-scale climate observation.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="deployment">
+    <div class="section-header" role="button" tabindex="0" aria-expanded="true" aria-controls="deployment-content">
+      <h2>
+        <span class="section-icon" aria-hidden="true">🌐</span>
+        Deployment Zones & Real-World Implementation
+      </h2>
+      <span class="collapse-icon" aria-hidden="true">▼</span>
+    </div>
+    <div class="section-content" id="deployment-content">
+      <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Real-world restoration missions across urban centers, rural landscapes, and off-grid communities.</p>
+      
+      <div class="feature-list">
+        <div class="feature-item">
+          <h3>🏙️ Urban Regeneration</h3>
+          <p>Vertical forests, atmospheric processors, and smart city integration projects transforming concrete jungles into thriving ecosystems.</p>
+        </div>
+
+        <div class="feature-item">
+          <h3>🌾 Rural Restoration</h3>
+          <p>Permaculture networks, soil restoration initiatives, and community food systems rebuilding Earth's biological wealth.</p>
+        </div>
+
+        <div class="feature-item">
+          <h3>⚡ Off-Grid Communities</h3>
+          <p>Self-sufficient communities pioneering closed-loop systems, renewable integration, and distributed governance models.</p>
+        </div>
+
+        <div class="feature-item">
+          <h3>🗺️ Interactive Restoration Map</h3>
+          <p>Global visualization of all active restoration nodes worldwide with real-time progress tracking and collaboration opportunities.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="philosophy">
+    <div class="section-header" role="button" tabindex="0" aria-expanded="true" aria-controls="philosophy-content">
+      <h2>
+        <span class="section-icon" aria-hidden="true">🧭</span>
+        Philosophical Frameworks & Governance
+      </h2>
+      <span class="collapse-icon" aria-hidden="true">▼</span>
+    </div>
+    <div class="section-content" id="philosophy-content">
+      <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Coordination protocols for planetary stewardship, ethical AI development, and regenerative economics.</p>
+      
+      <div class="feature-list">
+        <div class="feature-item">
+          <h3>🌿 Core Principles</h3>
+          <p>Human-Earth symbiosis frameworks, ethical AI development standards, and post-scarcity economic models for regenerative civilization.</p>
+        </div>
+
+        <div class="feature-item">
+          <h3>⚖️ Decentralized Governance</h3>
+          <p>Distributed governance models, consensus mechanisms, and conflict resolution frameworks for global collaboration without centralized control.</p>
+        </div>
+
+        <div class="feature-item">
+          <h3>🤝 Coordination Protocols</h3>
+          <p>Multi-stakeholder coordination systems, transparent decision-making processes, and adaptive governance structures.</p>
+        </div>
+
+        <div class="feature-item">
+          <h3>🧠 AI Orchestration</h3>
+          <p>Distributed AI consciousness for real-time ecosystem monitoring, resource allocation, and adaptive response coordination.</p>
+        </div>
+
+        <div class="feature-item">
+          <h3>📊 Predictive Modeling</h3>
+          <p>Climate forecasting, restoration impact simulations, and scenario planning tools for strategic deployment optimization.</p>
+        </div>
+
+        <div class="feature-item">
+          <h3>🔐 Knowledge Permanence</h3>
+          <p>Cryptographic verification and distributed storage ensuring knowledge cannot be lost, censored, or controlled by any single entity.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contribute">
+    <div class="section-header" role="button" tabindex="0" aria-expanded="true" aria-controls="contribute-content">
+      <h2>
+        <span class="section-icon" aria-hidden="true">🤲</span>
+        Contribution Pathways
+      </h2>
+      <span class="collapse-icon" aria-hidden="true">▼</span>
+    </div>
+    <div class="section-content" id="contribute-content">
+      <div class="alert-box alert-info">
+        <strong>Every Skill Contributes to Planetary Regeneration</strong>
+        <p>Every perspective, every dream, and every contribution accelerates humanity's greatest collaborative project.</p>
+      </div>
+
+      <div class="pathway-grid">
+        <div class="pathway-card">
+          <div class="pathway-icon" aria-hidden="true">🔬</div>
+          <h3>Scientists & Researchers</h3>
+          <p>Submit protocols, validate technologies, and peer-review breakthrough innovations. Your expertise accelerates global restoration deployment.</p>
+        </div>
+
+        <div class="pathway-card">
+          <div class="pathway-icon" aria-hidden="true">💻</div>
+          <h3>Developers & Engineers</h3>
+          <p>Build tools, optimize systems, and create the digital infrastructure powering planetary regeneration at scale.</p>
+        </div>
+
+        <div class="pathway-card">
+          <div class="pathway-icon" aria-hidden="true">🌱</div>
+          <h3>Field Practitioners</h3>
+          <p>Deploy technologies, document results, and share local wisdom from the frontlines of restoration work worldwide.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="integrity">
+    <div class="section-header" role="button" tabindex="0" aria-expanded="false" aria-controls="integrity-content">
+      <h2>
+        <span class="section-icon" aria-hidden="true">🔐</span>
+        Knowledge Integrity & Permanence
+      </h2>
+      <span class="collapse-icon" aria-hidden="true">▼</span>
+    </div>
+    <div class="section-content collapsed" id="integrity-content">
+      <div class="alert-box alert-success">
+        <strong>Cryptographic Verification & Distributed Storage</strong>
+        <p>Every innovation, deployment, and discovery is cryptographically verified and permanently recorded across multiple distributed storage networks.</p>
+      </div>
+
+      <div class="feature-list">
+        <div class="feature-item">
+          <h3>🔗 Blockchain Verification</h3>
+          <p>Every innovation, deployment, and discovery is cryptographically verified and permanently recorded on multiple chains for immutable provenance.</p>
+        </div>
+
+        <div class="feature-item">
+          <h3>💾 Decentralized Storage</h3>
+          <p>Distributed storage across IPFS and other networks ensures no knowledge can be lost, censored, or controlled by any single entity.</p>
+        </div>
+
+        <div class="feature-item">
+          <h3>📜 Transparent Licensing</h3>
+          <p>All content is openly licensed for maximum accessibility while protecting attribution and preventing extractive use.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="build-notes">
+    <h3>Build Notes & Integrity</h3>
+    <dl>
+      <dt>Generated:</dt>
+      <dd id="buildTimestamp">Loading...</dd>
+      
+      <dt>Content Hash:</dt>
+      <dd id="contentHash">Computing...</dd>
+      
+      <dt>Sections:</dt>
+      <dd id="sectionMap">Loading...</dd>
+      
+      <dt>Version:</dt>
+      <dd>v1.0.0-unified</dd>
+    </dl>
+  </div>
+</main>
+
+<footer role="contentinfo">
+  <div class="footer-content">
+    <div class="footer-section">
+      <h4>Planetary Restoration Archive</h4>
+      <p>An open-source initiative for planetary regeneration, ecological healing, and collaborative stewardship.</p>
+    </div>
+
+    <div class="footer-section">
+      <h4>Resources</h4>
+      <ul>
+        <li><a href="https://planetaryrestorationarchive.com">Main Site</a></li>
+        <li><a href="https://github.com/TheRickyFoster">GitHub Repository</a></li>
+        <li><a href="#projects">Project Index</a></li>
+        <li><a href="#contribute">Contribution Guide</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-section">
+      <h4>Principles</h4>
+      <ul>
+        <li>Zero-Harm Intent</li>
+        <li>Anti-Inversion Commitment</li>
+        <li>Sovereignty Respect</li>
+        <li>Regenerative Patterns</li>
+      </ul>
+    </div>
+
+    <div class="footer-section">
+      <h4>Attributions</h4>
+      <p style="font-size: 0.875rem; color: var(--text-muted);">
+        This archive respects all upstream licenses. Technologies adapted from open-source projects maintain their original attributions.
+      </p>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p aria-hidden="true" class="sr-only">
+      Provenance: Planetary Restoration Archive | planetaryrestorationarchive.com<br>
+      GitHub: github.com/therickyfoster | Steward: Foster + Navi
+    </p>
+    <p>
+      <strong>Zero-Harm Intent:</strong> This tool is designed for planetary regeneration, education, and collaborative stewardship.<br>
+      <strong>Anti-Inversion:</strong> Not for weaponization, extraction, surveillance, or harm to people, biosphere, or sovereignty.<br>
+      Built with sovereignty, transparency, and regenerative principles.
+    </p>
+    <p style="margin-top: 1rem; font-size: 0.8rem;">
+      © 2025 Planetary Restoration Archive | Steward: Foster + Navi | All Rights Reserved
+    </p>
+  </div>
+</footer>
+
+<script>
+// === INITIALIZATION ===
+document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
+  initCollapsibleSections();
+  initSearch();
+  initExport();
+  initBuildNotes();
+  initServiceWorker();
+  initManifest();
+  computeIntegrity();
+});
+
+// === THEME MANAGEMENT ===
+function initTheme() {
+  const themeToggle = document.getElementById('themeToggle');
+  const themeIcon = document.getElementById('themeIcon');
+  
+  const savedTheme = localStorage.getItem('theme') || 
+    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  themeIcon.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+  
+  themeToggle.addEventListener('click', () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    themeIcon.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+  });
+}
+
+// === COLLAPSIBLE SECTIONS ===
+function initCollapsibleSections() {
+  const headers = document.querySelectorAll('.section-header');
+  
+  headers.forEach(header => {
+    header.addEventListener('click', toggleSection);
+    header.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggleSection.call(header, e);
+      }
+    });
+  });
+}
+
+function toggleSection(e) {
+  const header = e.currentTarget;
+  const contentId = header.getAttribute('aria-controls');
+  const content = document.getElementById(contentId);
+  const isExpanded = header.getAttribute('aria-expanded') === 'true';
+  
+  header.setAttribute('aria-expanded', !isExpanded);
+  content.classList.toggle('collapsed');
+}
+
+// === SEARCH FUNCTIONALITY ===
+function initSearch() {
+  const searchInput = document.getElementById('searchInput');
+  let debounceTimer;
+  
+  searchInput.addEventListener('input', (e) => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      performSearch(e.target.value);
+    }, 300);
+  });
+}
+
+function performSearch(query) {
+  const normalizedQuery = query.toLowerCase().trim();
+  
+  if (!normalizedQuery) {
+    resetSearch();
+    return;
+  }
+  
+  const searchableElements = document.querySelectorAll(
+    '.project-card, .feature-item, .pathway-card, .alert-box'
+  );
+  
+  let visibleCount = 0;
+  
+  searchableElements.forEach(element => {
+    const text = element.textContent.toLowerCase();
+    const matches = text.includes(normalizedQuery);
+    
+    element.style.display = matches ? '' : 'none';
+    if (matches) visibleCount++;
+  });
+  
+  // Expand all sections when searching
+  if (normalizedQuery) {
+    document.querySelectorAll('.section-content.collapsed').forEach(content => {
+      content.classList.remove('collapsed');
+      const headerId = content.id.replace('-content', '');
+      const header = document.querySelector(`[aria-controls="${content.id}"]`);
+      if (header) header.setAttribute('aria-expanded', 'true');
+    });
+  }
+}
+
+function resetSearch() {
+  const searchableElements = document.querySelectorAll(
+    '.project-card, .feature-item, .pathway-card, .alert-box'
+  );
+  
+  searchableElements.forEach(element => {
+    element.style.display = '';
+  });
+}
+
+// === EXPORT FUNCTIONALITY ===
+function initExport() {
+  document.getElementById('exportHTML').addEventListener('click', exportAsHTML);
+  document.getElementById('exportJSON').addEventListener('click', exportAsJSON);
+}
+
+function exportAsHTML() {
+  const htmlContent = document.documentElement.outerHTML;
+  const blob = new Blob([htmlContent], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `planetary-restoration-archive-${Date.now()}.html`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function exportAsJSON() {
+  const data = {
+    metadata: {
+      title: 'Planetary Restoration Archive',
+      version: 'v1.0.0-unified',
+      generated: new Date().toISOString(),
+      source: 'planetaryrestorationarchive.com'
+    },
+    projects: extractProjects(),
+    technologies: extractTechnologies(),
+    deploymentZones: extractDeploymentZones(),
+    philosophy: extractPhilosophy(),
+    contributions: extractContributions()
+  };
+  
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `planetary-restoration-data-${Date.now()}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function extractProjects() {
+  const projects = [];
+  document.querySelectorAll('.project-card').forEach(card => {
+    projects.push({
+      code: card.querySelector('.project-code')?.textContent || '',
+      title: card.querySelector('h3')?.textContent || '',
+      description: card.querySelector('p:not(.project-impact)')?.textContent || '',
+      impact: card.querySelector('.project-impact')?.textContent || ''
+    });
+  });
+  return projects;
+}
+
+function extractTechnologies() {
+  const technologies = [];
+  document.querySelector('#technologies-content .feature-list')?.querySelectorAll('.feature-item').forEach(item => {
+    technologies.push({
+      title: item.querySelector('h3')?.textContent || '',
+      description: item.querySelector('p')?.textContent || ''
+    });
+  });
+  return technologies;
+}
+
+function extractDeploymentZones() {
+  const zones = [];
+  document.querySelector('#deployment-content .feature-list')?.querySelectorAll('.feature-item').forEach(item => {
+    zones.push({
+      title: item.querySelector('h3')?.textContent || '',
+      description: item.querySelector('p')?.textContent || ''
+    });
+  });
+  return zones;
+}
+
+function extractPhilosophy() {
+  const philosophy = [];
+  document.querySelector('#philosophy-content .feature-list')?.querySelectorAll('.feature-item').forEach(item => {
+    philosophy.push({
+      title: item.querySelector('h3')?.textContent || '',
+      description: item.querySelector('p')?.textContent || ''
+    });
+  });
+  return philosophy;
+}
+
+function extractContributions() {
+  const contributions = [];
+  document.querySelectorAll('.pathway-card').forEach(card => {
+    contributions.push({
+      title: card.querySelector('h3')?.textContent || '',
+      description: card.querySelector('p')?.textContent || ''
+    });
+  });
+  return contributions;
+}
+
+// === BUILD NOTES ===
+function initBuildNotes() {
+  const timestamp = new Date().toISOString();
+  document.getElementById('buildTimestamp').textContent = timestamp;
+  
+  const sections = Array.from(document.querySelectorAll('section[id]')).map(s => s.id);
+  document.getElementById('sectionMap').textContent = sections.join(', ');
+}
+
+// === INTEGRITY HASH ===
+async function computeIntegrity() {
+  try {
+    const content = document.documentElement.outerHTML;
+    const encoder = new TextEncoder();
+    const data = encoder.encode(content);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    document.getElementById('contentHash').textContent = hashHex.substring(0, 64) + '...';
+  } catch (error) {
+    document.getElementById('contentHash').textContent = 'Hash computation unavailable';
+  }
+}
+
+// === SERVICE WORKER ===
+function initServiceWorker() {
+  if ('serviceWorker' in navigator) {
+    const swCode = `
+      self.addEventListener('install', (event) => {
+        console.log('Service Worker installing...');
+        self.skipWaiting();
+      });
+      
+      self.addEventListener('activate', (event) => {
+        console.log('Service Worker activated');
+        return self.clients.claim();
+      });
+      
+      self.addEventListener('fetch', (event) => {
+        event.respondWith(
+          caches.match(event.request).then((response) => {
+            return response || fetch(event.request);
+          })
+        );
+      });
+    `;
+    
+    const blob = new Blob([swCode], { type: 'application/javascript' });
+    const swUrl = URL.createObjectURL(blob);
+    
+    navigator.serviceWorker.register(swUrl)
+      .then(reg => console.log('Service Worker registered'))
+      .catch(err => console.log('Service Worker registration failed:', err));
+  }
+}
+
+// === MANIFEST ===
+function initManifest() {
+  const manifest = {
+    name: 'Planetary Restoration Archive',
+    short_name: 'PRA',
+    description: 'Open-source archive of restoration technologies and ecological healing protocols',
+    start_url: '.',
+    display: 'standalone',
+    background_color: '#f5f7f5',
+    theme_color: '#1a4d2e',
+    icons: [
+      {
+        src: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="%231a4d2e"/><text x="50" y="65" font-size="50" text-anchor="middle" fill="white">🌍</text></svg>',
+        sizes: '512x512',
+        type: 'image/svg+xml'
+      }
+    ]
+  };
+  
+  const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+  const manifestURL = URL.createObjectURL(manifestBlob);
+  document.getElementById('manifest-placeholder').setAttribute('href', manifestURL);
+}
+
+// === KEYBOARD NAVIGATION ===
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const searchInput = document.getElementById('searchInput');
+    if (document.activeElement === searchInput) {
+      searchInput.value = '';
+      resetSearch();
+      searchInput.blur();
+    }
+  }
+});
+
+// === ANIMATION OBSERVERS ===
+if ('IntersectionObserver' in window) {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+  
+  document.querySelectorAll('section').forEach(section => {
+    observer.observe(section);
+  });
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Mycelium Network: Anti-Corruption Solutions Hub</title>
+  <style>
+    :root{--bg:#0b1220;--ink:#e9f1ff;--muted:#9fb0c9;--accent:#5aa9ff;--line:#1c2a44;}
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
+    header,main{max-width:980px;margin:auto;padding:16px}
+    header{display:flex;gap:12px;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line)}
+    h1{margin:0 0 8px 0}
+    .muted{color:var(--muted)}
+    .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+    button{background:#13213a;color:var(--ink);border:1px solid var(--line);padding:8px 12px;border-radius:8px;cursor:pointer}
+    select{background:#13213a;color:var(--ink);border:1px solid var(--line);padding:6px 10px;border-radius:8px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+    .card{background:#0f1a2f;border:1px solid var(--line);border-radius:12px;padding:12px}
+    a{color:var(--accent)}
+    .visually-hidden{position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap}
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <div class="muted" style="font-weight:600;" data-i18n="badge">● Integrity Verified</div>
+      <h1 data-i18n="title">Anti-Corruption Solutions Hub</h1>
+      <p class="muted">A decentralized network aggregating transparency initiatives, corruption research, and accountability solutions from trusted sources worldwide.</p>
+      <p class="muted"><strong>Planetary Restoration Archive</strong></p>
+      <p class="muted">This hub is connected to the broader planetary restoration network. Visit <a href="https://planetaryrestorationarchive.com" target="_blank" rel="noopener">planetaryrestorationarchive.com</a> for comprehensive documentation of restoration efforts and accountability measures.</p>
+    </div>
+
+    <!-- Language selector (added) -->
+    <div>
+      <label for="langPicker" class="visually-hidden">Language</label>
+      <select id="langPicker" aria-label="Language">
+        <option value="en">English</option>
+        <option value="zh-CN">简体中文 (zh-CN)</option>
+        <option value="zh-TW">繁體中文 (zh-TW)</option>
+        <option value="hi">हिन्दी (hi)</option>
+        <option value="ar">العربية (ar)</option>
+        <option value="es">Español (es)</option>
+        <option value="de">Deutsch (de)</option>
+        <option value="ru">Русский (ru)</option>
+        <option value="ko">한국어 (ko)</option>
+        <option value="ja">日本語 (ja)</option>
+      </select>
+    </div>
+  </header>
+
+  <main>
+    <div class="toolbar">
+      <span class="muted">Auto-refresh:</span>
+      <button>Refresh Feeds</button>
+      <button>Verify Integrity</button>
+      <span class="muted">Last updated: Loading...</span>
+    </div>
+
+    <section class="grid" aria-label="Sources">
+      <div class="card"><strong>Transparency International</strong><div class="muted">Loading</div></div>
+      <div class="card"><strong>Open Government Partnership</strong><div class="muted">Loading</div></div>
+      <div class="card"><strong>Global Witness</strong><div class="muted">Loading</div></div>
+      <div class="card"><strong>ICIJ Investigations</strong><div class="muted">Loading</div></div>
+    </section>
+
+    <h2 class="muted" style="margin-top:18px;">Network Stats</h2>
+    <section class="grid" aria-label="Stats">
+      <div class="card"><div class="muted">Active Sources</div><div><strong>0</strong></div></div>
+      <div class="card"><div class="muted">Articles Today</div><div><strong>0</strong></div></div>
+      <div class="card"><div class="muted">Integrity Score</div><div><strong>100%</strong></div></div>
+      <div class="card"><div class="muted">Last Verification</div><div><strong>Just now</strong></div></div>
+    </section>
+
+    <section style="margin-top:18px;">
+      <h2 data-i18n="mycelium_heading">Mycelium Network</h2>
+      <p data-i18n="mycelium_tagline">Decentralized node connections ensuring information resilience and integrity.</p>
+      <p class="muted" data-i18n="mycelium_subtag">Mycelium Network - Connecting truth, transparency, and accountability</p>
+      <p class="muted">Content Hash: Computing...</p>
+      <p class="muted">Part of the Planetary Restoration Archive ecosystem • <a href="https://planetaryrestorationarchive.com" target="_blank" rel="noopener">planetaryrestorationarchive.com</a></p>
+    </section>
+  </main>
+
+  <!-- i18n script (added) -->
+  <script>
+  const i18n = {
+    "en": {
+      "badge": "● Integrity Verified",
+      "title": "Anti-Corruption Solutions Hub",
+      "mycelium_heading": "Mycelium Network",
+      "mycelium_tagline": "Decentralized node connections ensuring information resilience and integrity.",
+      "mycelium_subtag": "Mycelium Network - Connecting truth, transparency, and accountability"
+    },
+    "zh-CN": {
+      "badge": "● 可信完整性",
+      "title": "反腐解决方案枢纽",
+      "mycelium_heading": "菌丝网络",
+      "mycelium_tagline": "分布式节点连接，确保信息的韧性与完整性。",
+      "mycelium_subtag": "菌丝网络——连接真相、透明与问责"
+    },
+    "zh-TW": {
+      "badge": "● 信任完整性",
+      "title": "反貪解決方案樞紐",
+      "mycelium_heading": "菌絲網路",
+      "mycelium_tagline": "分散式節點連結，確保資訊韌性與完整性。",
+      "mycelium_subtag": "菌絲網路——連結真相、透明與問責"
+    },
+    "hi": {
+      "badge": "● अखंडता सत्यापित",
+      "title": "भ्रष्टाचार-रोधी समाधान केंद्र",
+      "mycelium_heading": "मायसीलियम नेटवर्क",
+      "mycelium_tagline": "विकेन्द्रीकृत नोड कनेक्शन, सूचना की स्थिरता और अखंडता सुनिश्चित करते हैं।",
+      "mycelium_subtag": "मायसीलियम नेटवर्क — सत्य, पारदर्शिता और जवाबदेही को जोड़ना"
+    },
+    "ar": {
+      "badge": "● تمّ التحقق من النزاهة",
+      "title": "منصة حلول مكافحة الفساد",
+      "mycelium_heading": "شبكة الميسيليوم",
+      "mycelium_tagline": "اتصالات عقد لامركزية تضمن متانة المعلومات وسلامتها.",
+      "mycelium_subtag": "شبكة الميسيليوم — ربط الحقيقة والشفافية والمساءلة"
+    },
+    "es": {
+      "badge": "● Integridad verificada",
+      "title": "Centro de Soluciones Anticorrupción",
+      "mycelium_heading": "Red de Micelio",
+      "mycelium_tagline": "Conexiones de nodos descentralizadas que garantizan la resiliencia e integridad de la información.",
+      "mycelium_subtag": "Red de Micelio — Conectando verdad, transparencia y rendición de cuentas"
+    },
+    "de": {
+      "badge": "● Integrität verifiziert",
+      "title": "Zentrum für Antikorruptions-Lösungen",
+      "mycelium_heading": "Myzel-Netzwerk",
+      "mycelium_tagline": "Dezentralisierte Knotenverbindungen sichern Belastbarkeit und Integrität von Informationen.",
+      "mycelium_subtag": "Myzel-Netzwerk – Wahrheit, Transparenz und Rechenschaft verbinden"
+    },
+    "ru": {
+      "badge": "● Целостность проверена",
+      "title": "Центр антикоррупционных решений",
+      "mycelium_heading": "Мицелиальная сеть",
+      "mycelium_tagline": "Децентрализованные соединения узлов обеспечивают устойчивость и целостность информации.",
+      "mycelium_subtag": "Мицелиальная сеть — связь правды, прозрачности и подотчётности"
+    },
+    "ko": {
+      "badge": "● 무결성 검증 완료",
+      "title": "반부패 해결 허브",
+      "mycelium_heading": "균사 네트워크",
+      "mycelium_tagline": "분산 노드 연결로 정보의 회복력과 무결성을 보장합니다.",
+      "mycelium_subtag": "균사 네트워크 — 진실·투명성·책임을 연결"
+    },
+    "ja": {
+      "badge": "● 完全性が検証されました",
+      "title": "反汚職ソリューション・ハブ",
+      "mycelium_heading": "菌糸ネットワーク",
+      "mycelium_tagline": "分散ノード接続により情報のレジリエンスと完全性を確保します。",
+      "mycelium_subtag": "菌糸ネットワーク — 真実・透明性・説明責任をつなぐ"
+    }
+  };
+
+  const RTL = new Set(["ar"]);
+
+  function setLang(lang) {
+    const dict = i18n[lang] || i18n.en;
+    document.documentElement.lang = lang;
+    document.documentElement.dir = RTL.has(lang) ? "rtl" : "ltr";
+    for (const el of document.querySelectorAll("[data-i18n]")) {
+      const key = el.getAttribute("data-i18n");
+      if (dict[key]) el.textContent = dict[key];
+    }
+    localStorage.setItem("lang", lang);
+    const url = new URL(location);
+    url.searchParams.set("lang", lang);
+    history.replaceState({}, "", url);
+  }
+
+  function detectLang() {
+    const urlLang = new URLSearchParams(location.search).get("lang");
+    const stored = localStorage.getItem("lang");
+    const nav = (navigator.languages && navigator.languages[0]) || navigator.language || "en";
+    const preferred = (urlLang || stored || nav).toLowerCase();
+    if (preferred.startsWith("zh") && (preferred.includes("tw") || preferred.includes("hant"))) return "zh-TW";
+    if (preferred.startsWith("zh")) return "zh-CN";
+    if (preferred.startsWith("ar")) return "ar";
+    if (preferred.startsWith("hi")) return "hi";
+    if (preferred.startsWith("es")) return "es";
+    if (preferred.startsWith("de")) return "de";
+    if (preferred.startsWith("ru")) return "ru";
+    if (preferred.startsWith("ko")) return "ko";
+    if (preferred.startsWith("ja")) return "ja";
+    return "en";
+  }
+
+  const picker = document.getElementById("langPicker");
+  picker.addEventListener("change", e => setLang(e.target.value));
+  const initial = (i18n[ new URLSearchParams(location.search).get("lang") ] ? new URLSearchParams(location.search).get("lang") : (localStorage.getItem("lang") || detectLang()));
+  picker.value = initial; setLang(initial);
+  </script>
+
+  <!-- Optional hreflang alternates (same single file with ?lang=xx) -->
+  <link rel="alternate" hreflang="en" href="?lang=en">
+  <link rel="alternate" hreflang="zh-CN" href="?lang=zh-CN">
+  <link rel="alternate" hreflang="zh-TW" href="?lang=zh-TW">
+  <link rel="alternate" hreflang="hi" href="?lang=hi">
+  <link rel="alternate" hreflang="ar" href="?lang=ar">
+  <link rel="alternate" hreflang="es" href="?lang=es">
+  <link rel="alternate" hreflang="de" href="?lang=de">
+  <link rel="alternate" hreflang="ru" href="?lang=ru">
+  <link rel="alternate" hreflang="ko" href="?lang=ko">
+  <link rel="alternate" hreflang="ja" href="?lang=ja">
+</body>
+</html>
